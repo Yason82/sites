@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Oasis Defender — цифровой cockpit гибридной инфраструктуры</title>
+  <meta name="description" content="Единая карта, политика и контроль изменений в облаках и ЦОД — без агентов, через read-only API." />
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#0f1733;
+      --card:#101a3b;
+      --text:#e8ecff;
+      --muted:#aab4e6;
+      --line:rgba(255,255,255,.10);
+      --accent:#6ea8ff;
+      --accent2:#66e3c4;
+      --warn:#ffcf6e;
+      --shadow: 0 18px 60px rgba(0,0,0,.40);
+      --r:18px;
+      --r2:26px;
+      --max:1180px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 15% -10%, rgba(110,168,255,.20), transparent 55%),
+        radial-gradient(900px 600px at 90% 10%, rgba(102,227,196,.12), transparent 55%),
+        radial-gradient(900px 700px at 40% 110%, rgba(255,207,110,.10), transparent 55%),
+        var(--bg);
+      overflow-x:hidden;
+    }
+    a{color:inherit; text-decoration:none}
+    .wrap{max-width:var(--max); margin:0 auto; padding:0 22px}
+    .muted{color:var(--muted)}
+    .tiny{font-size:12px}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+      font-size:13px;
+      white-space:nowrap;
+    }
+    .kpi{display:flex; flex-wrap:wrap; gap:10px}
+
+    /* Nav */
+    .nav{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter:saturate(140%) blur(14px);
+      background:linear-gradient(to bottom, rgba(11,16,32,.82), rgba(11,16,32,.55));
+      border-bottom:1px solid var(--line);
+    }
+    .nav .row{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 0;
+      gap:16px;
+    }
+    .brand{display:flex; align-items:center; gap:10px; font-weight:720; letter-spacing:.2px}
+    .logo{
+      width:34px; height:34px; border-radius:12px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(110,168,255,.95), rgba(110,168,255,.15) 58%, transparent 60%),
+        radial-gradient(circle at 70% 65%, rgba(102,227,196,.95), rgba(102,227,196,.10) 60%, transparent 62%),
+        linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:0 10px 35px rgba(110,168,255,.12);
+    }
+    .menu{display:flex; align-items:center; gap:14px; color:var(--muted); font-size:14px}
+    .menu a{padding:8px 10px; border-radius:10px}
+    .menu a:hover{background:rgba(255,255,255,.06); color:var(--text)}
+    .nav-cta{display:flex; gap:10px; align-items:center}
+
+    /* Buttons */
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      padding:10px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      font-weight:650;
+      cursor:pointer;
+      transition:transform .12s ease, background .12s ease, border-color .12s ease;
+      user-select:none;
+    }
+    .btn:hover{background:rgba(255,255,255,.08); transform:translateY(-1px); border-color:rgba(255,255,255,.16)}
+    .btn.primary{
+      border-color:rgba(110,168,255,.35);
+      background:linear-gradient(135deg, rgba(110,168,255,.25), rgba(102,227,196,.12));
+      box-shadow:0 12px 40px rgba(110,168,255,.12);
+    }
+    .btn.primary:hover{border-color:rgba(110,168,255,.55)}
+    .btn.link{background:transparent}
+
+    /* Sections */
+    section{padding:56px 0}
+    .hero{padding:44px 0 34px}
+    .hero .layout{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:22px;
+      align-items:stretch;
+    }
+    h1{
+      margin:0 0 10px;
+      font-size:44px;
+      line-height:1.08;
+      letter-spacing:-.4px;
+    }
+    .lead{font-size:18px; color:var(--muted); margin:0 0 18px}
+    .hero .actions{display:flex; gap:12px; flex-wrap:wrap; margin:14px 0 14px}
+    .hero .fineprint{color:var(--muted); font-size:13px}
+
+    /* Mock UI */
+    .ui{
+      border-radius:var(--r2);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      min-height:360px;
+    }
+    .ui-top{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 14px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background:rgba(15,23,51,.55);
+      font-size:13px;
+      color:var(--muted);
+    }
+    .ui-dots{display:flex; gap:6px}
+    .dot{width:9px; height:9px; border-radius:999px; background:rgba(255,255,255,.14)}
+    .ui-body{
+      display:grid;
+      grid-template-columns: 180px 1fr 210px;
+      gap:12px;
+      padding:14px;
+    }
+    .panel{
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(11,16,32,.35);
+      overflow:hidden;
+    }
+    .panel h3{
+      margin:0;
+      padding:10px 12px;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.8px;
+      color:rgba(232,236,255,.8);
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
+    }
+    .list{padding:10px 12px; display:grid; gap:8px; color:var(--muted); font-size:13px}
+    .chip{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:8px 10px;
+      border-radius:12px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .chip b{color:var(--text); font-weight:650}
+    .badge{
+      font-size:12px;
+      color:rgba(232,236,255,.85);
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      white-space:nowrap;
+    }
+    .badge.warn{border-color:rgba(255,207,110,.28); background:rgba(255,207,110,.08); color:rgba(255,232,198,.95)}
+    .badge.good{border-color:rgba(102,227,196,.25); background:rgba(102,227,196,.08); color:rgba(204,255,244,.95)}
+    .graph{
+      position:relative;
+      min-height:290px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .graph svg{width:100%; height:100%}
+    .graph .hint{
+      position:absolute; left:14px; bottom:12px;
+      display:flex; gap:8px; flex-wrap:wrap;
+    }
+    .legend{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      color:rgba(232,236,255,.88);
+    }
+
+    /* Content blocks */
+    .section-title{
+      font-size:28px;
+      margin:0 0 8px;
+      letter-spacing:-.2px;
+    }
+    .cols3{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:14px;
+      margin-top:16px;
+    }
+    .card{
+      border-radius:var(--r);
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      padding:16px;
+    }
+    .card h3{margin:0 0 10px; font-size:14px; letter-spacing:.3px}
+    .card ul{margin:0; padding-left:18px; color:var(--muted)}
+    .card li{margin:8px 0}
+
+    .center-rail{
+      border-radius:var(--r2);
+      border:1px solid rgba(255,255,255,.12);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      padding:18px;
+      margin-top:14px;
+    }
+    .flow{
+      display:grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap:12px;
+      align-items:center;
+      margin-top:8px;
+    }
+    .flow .box{
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(11,16,32,.35);
+      padding:14px;
+      min-height:70px;
+    }
+    .flow .box b{display:block; margin-bottom:4px}
+    .arrow{
+      width:34px; height:34px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      display:flex; align-items:center; justify-content:center;
+      color:rgba(232,236,255,.85);
+      background:rgba(255,255,255,.04);
+      font-weight:800;
+    }
+    .bullets{
+      display:grid;
+      grid-template-columns:repeat(2, 1fr);
+      gap:10px;
+      margin-top:14px;
+      color:var(--muted);
+    }
+    .bullets .b{
+      border:1px dashed rgba(255,255,255,.14);
+      border-radius:14px;
+      padding:10px 12px;
+      background:rgba(255,255,255,.03);
+    }
+
+    .cards4{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:12px;
+      margin-top:14px;
+    }
+    .cards4 .card{padding:14px}
+    .cards4 .card h3{font-size:13px}
+
+    .roles{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:12px;
+      margin-top:14px;
+    }
+    .roles .card p{margin:0; color:var(--muted)}
+    .roles .go{margin-top:12px; display:inline-flex; gap:8px; align-items:center; color:rgba(232,236,255,.9); font-weight:650}
+    .roles .go span{opacity:.7}
+
+    .compare{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      margin-top:14px;
+    }
+    .compare .card{min-height:160px}
+    .compare .tag{
+      display:inline-block;
+      margin-bottom:10px;
+      font-size:12px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      color:rgba(232,236,255,.9);
+    }
+
+    .strip{
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap:10px;
+      margin-top:14px;
+    }
+    .stage{
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04);
+      padding:12px;
+    }
+    .stage b{display:block; margin-bottom:6px}
+    .stage p{margin:0; color:var(--muted); font-size:13px}
+
+    .logos{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+    }
+    .logo-chip{
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      padding:8px 12px;
+      font-size:13px;
+      color:rgba(232,236,255,.9);
+    }
+
+    .cta{
+      border-radius:var(--r2);
+      border:1px solid rgba(255,255,255,.12);
+      background:linear-gradient(135deg, rgba(110,168,255,.16), rgba(102,227,196,.10));
+      padding:18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+    .cta h3{margin:0; font-size:18px}
+    .cta p{margin:6px 0 0; color:rgba(232,236,255,.85)}
+    .cta .btn{white-space:nowrap}
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .hero .layout{grid-template-columns:1fr}
+      .ui-body{grid-template-columns:1fr}
+      .cols3{grid-template-columns:1fr}
+      .flow{grid-template-columns:1fr}
+      .arrow{display:none}
+      .bullets{grid-template-columns:1fr}
+      .cards4{grid-template-columns:1fr 1fr}
+      .roles{grid-template-columns:1fr}
+      .compare{grid-template-columns:1fr}
+      .strip{grid-template-columns:1fr}
+      h1{font-size:38px}
+    }
+    @media (max-width: 560px){
+      .menu{display:none}
+      .cards4{grid-template-columns:1fr}
+      h1{font-size:34px}
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <div class="row">
+        <a class="brand" href="#top" aria-label="Oasis Defender">
+          <span class="logo" aria-hidden="true"></span>
+          <span>Oasis Defender</span>
+        </a>
+        <nav class="menu" aria-label="Навигация">
+          <a href="#problem">Проблема</a>
+          <a href="#product">Что делает</a>
+          <a href="#artifacts">Артефакты</a>
+          <a href="#roles">Для кого</a>
+          <a href="#compat">Совместимость</a>
+        </nav>
+        <div class="nav-cta">
+          <a class="btn" href="#ui">Интерфейс</a>
+          <a class="btn primary" href="#cta">Запросить демо</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap">
+        <div class="layout">
+          <div>
+            <div class="kpi" aria-label="Факты">
+              <span class="pill">Read-only API</span>
+              <span class="pill">Без агентов</span>
+              <span class="pill">Multi-cloud + on‑prem</span>
+              <span class="pill">Карта → Политика → Дрейф</span>
+            </div>
+
+            <h1>Цифровой cockpit гибридной инфраструктуры</h1>
+            <p class="lead">
+              Единая карта, политика и контроль изменений в облаках и ЦОД.
+              Oasis Defender считает <b>реальные разрешённые пути</b> и фиксирует <b>дрейф</b> — чтобы инфраструктура перестала сюрпризить.
+            </p>
+
+            <div class="actions">
+              <a class="btn primary" href="#cta">Запросить демо</a>
+              <a class="btn" href="#ui">Посмотреть интерфейс</a>
+              <a class="btn link" href="#roles">Кому полезно →</a>
+            </div>
+
+            <div class="fineprint">
+              Подключение через read-only доступ. Можно начать с одного облака. Никаких агентов на хостах.
+            </div>
+          </div>
+
+          <!-- UI MOCK -->
+          <div id="ui" class="ui" role="img" aria-label="Макет интерфейса Oasis Defender">
+            <div class="ui-top">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="ui-dots" aria-hidden="true">
+                  <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                </div>
+                <span>Hybrid Graph • Reachability • Drift</span>
+              </div>
+              <span class="badge good">Baseline: OK</span>
+            </div>
+            <div class="ui-body">
+              <div class="panel">
+                <h3>Services / Zones</h3>
+                <div class="list">
+                  <div class="chip"><span><b>DMZ</b></span><span class="badge">12</span></div>
+                  <div class="chip"><span><b>App</b></span><span class="badge">24</span></div>
+                  <div class="chip"><span><b>DB</b></span><span class="badge">8</span></div>
+                  <div class="chip"><span><b>K8s</b></span><span class="badge">6</span></div>
+                  <div class="chip"><span><b>On‑prem</b></span><span class="badge">15</span></div>
+                </div>
+              </div>
+
+              <div class="panel graph">
+                <h3 style="position:absolute; top:0; left:0; right:0;">Unified Infrastructure Graph</h3>
+                <svg viewBox="0 0 640 320" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="g1" x1="0" x2="1">
+                      <stop offset="0" stop-color="rgba(110,168,255,.65)"/>
+                      <stop offset="1" stop-color="rgba(102,227,196,.45)"/>
+                    </linearGradient>
+                    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+                      <feGaussianBlur stdDeviation="5" result="b"/>
+                      <feMerge>
+                        <feMergeNode in="b"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                  </defs>
+
+                  <!-- edges -->
+                  <path d="M110,160 C200,60 290,70 340,110" stroke="url(#g1)" stroke-width="2.4" fill="none" opacity=".9"/>
+                  <path d="M340,110 C410,130 470,150 520,170" stroke="url(#g1)" stroke-width="2.4" fill="none" opacity=".8"/>
+                  <path d="M110,160 C220,190 300,210 360,230" stroke="rgba(255,255,255,.22)" stroke-width="2" fill="none"/>
+                  <path d="M360,230 C430,250 500,250 560,235" stroke="rgba(255,255,255,.18)" stroke-width="2" fill="none"/>
+
+                  <!-- nodes -->
+                  <g filter="url(#glow)">
+                    <circle cx="110" cy="160" r="18" fill="rgba(255,255,255,.10)" stroke="rgba(110,168,255,.65)" stroke-width="2"/>
+                    <circle cx="340" cy="110" r="18" fill="rgba(255,255,255,.10)" stroke="rgba(102,227,196,.55)" stroke-width="2"/>
+                    <circle cx="520" cy="170" r="18" fill="rgba(255,255,255,.10)" stroke="rgba(255,207,110,.55)" stroke-width="2"/>
+                    <circle cx="360" cy="230" r="16" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.22)" stroke-width="2"/>
+                    <circle cx="560" cy="235" r="16" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.22)" stroke-width="2"/>
+                  </g>
+
+                  <!-- labels -->
+                  <text x="86" y="200" fill="rgba(232,236,255,.75)" font-size="12">Internet</text>
+                  <text x="316" y="150" fill="rgba(232,236,255,.75)" font-size="12">LB / WAF</text>
+                  <text x="495" y="210" fill="rgba(232,236,255,.75)" font-size="12">Service</text>
+                  <text x="334" y="265" fill="rgba(232,236,255,.65)" font-size="12">Subnet</text>
+                  <text x="540" y="270" fill="rgba(232,236,255,.65)" font-size="12">DB</text>
+
+                  <!-- highlight path -->
+                  <path d="M110,160 C200,60 290,70 340,110 C410,130 470,150 520,170"
+                        stroke="rgba(255,207,110,.80)" stroke-width="4" fill="none" opacity=".35"/>
+                </svg>
+                <div class="hint" aria-hidden="true">
+                  <span class="legend">Internet Exposure</span>
+                  <span class="legend">Allowed Paths</span>
+                  <span class="legend">Drift</span>
+                </div>
+              </div>
+
+              <div class="panel">
+                <h3>Drift / Risks</h3>
+                <div class="list">
+                  <div class="chip"><span><b>New public IP</b></span><span class="badge warn">High</span></div>
+                  <div class="chip"><span><b>CIDR расширен</b></span><span class="badge warn">Med</span></div>
+                  <div class="chip"><span><b>New path: Internet → DB</b></span><span class="badge warn">High</span></div>
+                  <div class="chip"><span><b>Exception TTL</b></span><span class="badge">7d</span></div>
+                  <div class="chip"><span><b>Top risks</b></span><span class="badge good">5</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /UI MOCK -->
+        </div>
+      </div>
+    </section>
+
+    <!-- PROBLEM -->
+    <section id="problem">
+      <div class="wrap">
+        <h2 class="section-title">Гибридная инфраструктура не имеет единой карты мира</h2>
+        <p class="muted" style="margin:0; max-width: 860px">
+          Когда инфраструктура распределена по облакам и ЦОД, “контроль” часто превращается в набор разрозненных консолей,
+          скриптов и периодических слепков. Проблема одна — проявляется у всех ролей по‑разному.
+        </p>
+
+        <div class="cols3">
+          <div class="card">
+            <h3>Как выглядит реальность</h3>
+            <ul>
+              <li>2–3 облака + on‑prem + Kubernetes</li>
+              <li>разные команды и зоны ответственности</li>
+              <li>изменения происходят ежедневно</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Как это контролируют сегодня</h3>
+            <ul>
+              <li>консоли облаков</li>
+              <li>самописные скрипты и таблицы</li>
+              <li>аудиты “раз в полгода”</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>К чему это приводит</h3>
+            <ul>
+              <li>нет целостной картины</li>
+              <li>риски находят постфактум</li>
+              <li>безопасность реагирует, а не управляет</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHAT IT DOES -->
+    <section id="product">
+      <div class="wrap">
+        <h2 class="section-title">Oasis Defender превращает инфраструктуру в управляемую систему</h2>
+        <p class="muted" style="margin:0; max-width: 860px">
+          Мы нормализуем разные облака и on‑prem в единую модель, считаем реальные разрешённые пути и фиксируем изменения.
+          Не «ещё один отчёт», а постоянный технадзор.
+        </p>
+
+        <div class="center-rail" aria-label="Схема работы">
+          <div class="flow">
+            <div class="box">
+              <b>Clouds / On‑prem / K8s</b>
+              <span class="muted">Подключение по API (read‑only)</span>
+            </div>
+            <div class="arrow">→</div>
+            <div class="box">
+              <b>Единый нормализованный граф</b>
+              <span class="muted">Объекты, связи, зоны, семантика</span>
+            </div>
+            <div class="arrow">→</div>
+            <div class="box">
+              <b>Контроль путей и изменений</b>
+              <span class="muted">Reachability, policy, drift, риски</span>
+            </div>
+          </div>
+
+          <div class="bullets">
+            <div class="b">Автоматически собирает инвентарь и строит интерактивную карту сервисов и связей</div>
+            <div class="b">Считает реальные разрешённые пути: Internet → Resource, Resource → Resource</div>
+            <div class="b">Фиксирует baseline и отмечает дрейф: новые пути, расширенные CIDR, public IP</div>
+            <div class="b">Формирует приоритетный список рисков вместо сотен “просто правил”</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARTIFACTS -->
+    <section id="artifacts">
+      <div class="wrap">
+        <h2 class="section-title">Результат — рабочие артефакты, а не «снимок на сегодня»</h2>
+        <p class="muted" style="margin:0; max-width: 860px">
+          Это то, что появляется сразу после подключения и остаётся актуальным: источник правды для ИТ, ИБ и провайдера.
+        </p>
+
+        <div class="cards4">
+          <div class="card">
+            <h3>Карта инфраструктуры</h3>
+            <div class="muted">Сервисы, зоны, связи — в одной модели</div>
+          </div>
+          <div class="card">
+            <h3>Attack surface</h3>
+            <div class="muted">Что реально доступно из Интернета и куда ведут пути</div>
+          </div>
+          <div class="card">
+            <h3>Изменения и дрейф</h3>
+            <div class="muted">Новые пути, расширенные CIDR, public IP</div>
+          </div>
+          <div class="card">
+            <h3>Базовый реестр рисков</h3>
+            <div class="muted">Приоритизация — топ‑риски, а не шум</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROLES -->
+    <section id="roles">
+      <div class="wrap">
+        <h2 class="section-title">Один продукт — разные роли. Один источник правды.</h2>
+        <p class="muted" style="margin:0; max-width: 860px">
+          Oasis не делит инфраструктуру на “для ИБ” и “для ИТ”. Он объединяет: одна модель, разные представления и отчёты.
+        </p>
+
+        <div class="roles">
+          <div class="card">
+            <h3>DevOps / Head of Infrastructure</h3>
+            <p>Понимание реальной топологии и контроль изменений: что изменилось, что теперь торчит наружу, где появился новый путь.</p>
+            <a class="go" href="#" onclick="return false;">Решения для DevOps <span>→</span></a>
+          </div>
+          <div class="card">
+            <h3>CISO / Информационная безопасность</h3>
+            <p>Доказательная сегментация и контроль attack surface: не “правила”, а реальные пути и артефакты для внутреннего контроля.</p>
+            <a class="go" href="#" onclick="return false;">Решения для ИБ <span>→</span></a>
+          </div>
+          <div class="card">
+            <h3>Облачные провайдеры / MSP</h3>
+            <p>Основа для security‑продукта и white‑label сервисов: multi‑tenant, отчёты, управляемые исключения.</p>
+            <a class="go" href="#" onclick="return false;">Решения для провайдера <span>→</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOT ANOTHER TOOL -->
+    <section>
+      <div class="wrap">
+        <h2 class="section-title">Почему это не «ещё один security‑инструмент»</h2>
+        <p class="muted" style="margin:0; max-width: 860px">
+          Сканеры и аудиты снимают слепок. Oasis живёт вместе с инфраструктурой: фиксирует модель, изменения и реальные пути.
+        </p>
+
+        <div class="compare">
+          <div class="card">
+            <span class="tag">Сканеры / периодические аудиты</span>
+            <ul>
+              <li class="muted">делают снимок «на момент»</li>
+              <li class="muted">слабый контекст связей и путей</li>
+              <li class="muted">быстро устаревают после изменений</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="tag">Oasis Defender</span>
+            <ul>
+              <li class="muted">постоянный технадзор</li>
+              <li class="muted">понимание структуры и reachability</li>
+              <li class="muted">baseline + drift + политика</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOGIC STRIP -->
+    <section>
+      <div class="wrap">
+        <h2 class="section-title">Логика работы</h2>
+        <p class="muted" style="margin:0; max-width: 860px">
+          Простая цепочка: видимость → правила игры → контроль изменений → приоритет → план действий.
+        </p>
+
+        <div class="strip" aria-label="Visibility Policy Drift Prioritization Fix Plan">
+          <div class="stage">
+            <b>Visibility</b>
+            <p>Единая карта и связи</p>
+          </div>
+          <div class="stage">
+            <b>Policy</b>
+            <p>Сетевые инварианты и исключения</p>
+          </div>
+          <div class="stage">
+            <b>Drift</b>
+            <p>Что изменилось и почему важно</p>
+          </div>
+          <div class="stage">
+            <b>Prioritization</b>
+            <p>Топ‑риски вместо шума</p>
+          </div>
+          <div class="stage">
+            <b>Fix Plan</b>
+            <p>Минимальное действие, рвущее путь</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPATIBILITY -->
+    <section id="compat">
+      <div class="wrap">
+        <h2 class="section-title">Совместимость</h2>
+        <p class="muted" style="margin:0; max-width: 860px">
+          Подключение по API, read‑only. Работаем с российскими и международными облаками, а также on‑prem платформами.
+        </p>
+
+        <div class="logos" aria-label="Логотипы совместимости (заглушки)">
+          <span class="logo-chip">Яндекс.Клауд</span>
+          <span class="logo-chip">Timeweb Cloud</span>
+          <span class="logo-chip">cloud.ru</span>
+          <span class="logo-chip">VMware</span>
+          <span class="logo-chip">OpenStack</span>
+          <span class="logo-chip">Kubernetes</span>
+          <span class="logo-chip">AWS</span>
+          <span class="logo-chip">Azure</span>
+          <span class="logo-chip">Google Cloud</span>
+        </div>
+        <p class="tiny muted" style="margin-top:10px">
+          Примечание: точный список интеграций и глубина данных зависят от API провайдера и доступных прав.
+        </p>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section id="cta">
+      <div class="wrap">
+        <div class="cta">
+          <div>
+            <h3>Посмотрите на инфраструктуру как на систему</h3>
+            <p>Покажем демо интерфейса и типовые артефакты: карта, пути, дрейф, топ‑риски.</p>
+            <p class="tiny muted" style="margin:8px 0 0">Без агентов. Read‑only. Можно начать с одного облака.</p>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end">
+            <a class="btn" href="#top">Наверх</a>
+            <a class="btn primary" href="mailto:demo@oasisdefender.example?subject=Demo%20Request%20—%20Oasis%20Defender">Запросить демо</a>
+          </div>
+        </div>
+        <p class="tiny muted" style="margin:14px 0 0">
+          * Это прототип страницы. Формулировки и визуальные элементы можно быстро подстроить под фирстиль и сегменты трафика.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer style="padding:18px 0 30px; border-top:1px solid var(--line); background:rgba(0,0,0,.08)">
+    <div class="wrap" style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; color:var(--muted); font-size:13px">
+      <span>© Oasis Defender</span>
+      <span>Prototype v1 • Product homepage</span>
+    </div>
+  </footer>
+</body>
+</html>
