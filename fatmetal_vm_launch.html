@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>FATMETAL — Виртуальные серверы</title>
+<style>
+
+    :root{
+      --brand:#5a2a6a;
+      --brand-2:#4b2359;
+      --bg:#f5f5f7;
+      --card:#fff;
+      --text:#1a1a1a;
+      --muted:#6b6f76;
+      --line:#e3e4e8;
+      --shade:#f1f1f4;
+      --radius:14px;
+      --radius-lg:16px;
+      --btn-radius:12px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:"Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      font-size:14px;
+      font-weight:400;
+      line-height:1.45;
+    }
+
+    /* Topbar (as in your UI) */
+    .topbar{
+      height:56px;
+      background:var(--brand);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      padding:0 18px;
+      gap:18px;
+    }
+    .logo{
+      display:flex; align-items:center; gap:10px;
+      font-weight:900; letter-spacing:.3px;
+    }
+    .logo .mark{
+      width:28px;height:28px;border-radius:50%;
+      background:#fff; color:var(--brand);
+      display:grid; place-items:center;
+      font-weight:900;
+    }
+    .top-actions{
+      margin-left:auto;
+      display:flex; align-items:center; gap:14px;
+      font-weight:700;
+      opacity:.95;
+    }
+    .pill{
+      display:flex; align-items:center; gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.14);
+      white-space:nowrap;
+    }
+    .avatar{
+      width:30px;height:30px;border-radius:50%;
+      background:rgba(255,255,255,.28);
+      display:inline-block;
+    }
+
+    /* Layout (sidebar + content) */
+    .layout{
+      display:grid;
+      grid-template-columns:260px 1fr;
+      min-height:calc(100vh - 56px);
+    }
+    .sidebar{
+      background:#fff;
+      border-right:1px solid var(--line);
+      padding:18px 0;
+    }
+    .nav-title{
+      padding:0 18px 8px;
+      color:var(--muted);
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-size:11px;
+    }
+    .nav a{
+      display:block;
+      padding:10px 18px;
+      text-decoration:none;
+      color:var(--text);
+      font-weight:700;
+    }
+    .nav a:hover{background:var(--shade)}
+    .nav a.active{
+      color:var(--brand-2);
+      background:rgba(90,42,106,.06);
+      border-left:4px solid var(--brand);
+      padding-left:14px;
+    }
+    .nav .tag{
+      display:inline-block;
+      margin-left:8px;
+      font-size:11px;
+      font-weight:900;
+      padding:2px 8px;
+      border-radius:999px;
+      background:#f3efe5;
+      color:#7a5a1a;
+      border:1px solid #ead9bd;
+      vertical-align:middle;
+    }
+
+    .content{padding:22px;}
+    h1{
+      margin:0 0 14px;
+      font-size:22px;
+      letter-spacing:.2px;
+    }
+    h2{
+      margin:0 0 10px;
+      font-size:18px;
+      letter-spacing:.1px;
+    }
+    .muted{color:var(--muted); font-weight:700}
+
+    /* Small segmented control like in PDF */
+    .seg{
+      display:inline-flex;
+      border:1px solid var(--line);
+      border-radius:999px;
+      overflow:hidden;
+      background:#fff;
+    }
+    .seg .opt{
+      padding:7px 12px;
+      font-weight:900;
+      font-size:12.5px;
+      color:var(--muted);
+      border-right:1px solid var(--line);
+      white-space:nowrap;
+    }
+    .seg .opt:last-child{border-right:none}
+    .seg .opt.active{
+      background:rgba(90,42,106,.08);
+      color:var(--brand-2);
+    }
+    .helper{
+      margin-top:8px;
+      font-size:12.5px;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    /* Cards / blocks */
+    .block{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius-lg);
+      padding:16px;
+      box-shadow:0 10px 22px rgba(0,0,0,.04);
+      margin-bottom:16px;
+    }
+    /* GRID RULES (DO NOT CHANGE):
+   - Server configuration presets (.plans) MUST be 3 columns on desktop.
+   - Marketplace OS/App cards (.catalog) MUST be 4 columns on desktop.
+   Keep these grids independent. Do not reuse one grid class for both.
+*/
+.plans{
+      display:grid;
+      grid-template-columns:repeat( 3, 1fr); /* presets: 3 in a row */
+      gap:14px;
+      margin-top:12px;
+    }
+    .plan{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:14px;
+      background:#fff;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:150px;
+    }
+    .plan .name{
+      font-weight:900;
+      color:var(--brand-2);
+      letter-spacing:.1px;
+    }
+    .plan .spec{
+      font-weight:800;
+      font-size:12.5px;
+      color:#3b3d42;
+    }
+    .plan .spec span{color:var(--muted); font-weight:800}
+    .price{
+      margin-top:auto;
+      display:flex;
+      align-items:baseline;
+      gap:8px;
+      font-weight:900;
+      color:var(--brand-2);
+    }
+    .price .num{font-size:20px}
+    .price .per{font-size:12.5px; color:var(--muted); font-weight:800}
+    .btn{
+      margin-top:8px;
+      border:1px solid rgba(90,42,106,.28);
+      background:var(--brand);
+      color:#fff;
+      border-radius:var(--btn-radius);
+      padding:9px 12px;
+      font-weight:900;
+      text-align:center;
+      user-select:none;
+      cursor:default;
+    }
+
+    /* Marketplace area (as in PDF) */
+    .tabs{
+      display:flex;
+      gap:8px;
+      margin-top:8px;
+    }
+    .tab{
+      padding:7px 10px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-weight:900;
+      font-size:12.5px;
+      color:var(--muted);
+      user-select:none;
+    }
+    .tab.active{
+      background:rgba(90,42,106,.08);
+      color:var(--brand-2);
+      border-color:rgba(90,42,106,.22);
+    }
+    .catalog{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: repeat( 4, 1fr); /* marketplace: 4 in a row */
+      gap:12px
+    }
+    
+    .app{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:14px;
+      background:#fff;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:132px; /* taller and less 'stretched' */
+    }
+    .app .top{
+      display:flex; gap:10px; align-items:flex-start;
+    }
+    .app .desc{
+      margin-top:2px;
+      font-size:12.5px;
+      line-height:1.35;
+      color:var(--muted);
+      font-weight:700;
+    }
+    .app .meta-row{
+      margin-top:auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .app .hint{
+      font-size:11.5px;
+      color:var(--muted);
+      font-weight:800;
+      background:var(--shade);
+      border:1px solid var(--line);
+      padding:3px 8px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+
+
+    .group-title{
+      margin-top:10px;
+      font-weight:900;
+      color:var(--muted);
+      font-size:12px;
+      text-transform:none;
+    }
+
+    /* responsive */
+    @media (max-width: 1100px){
+      .plans{grid-template-columns:1fr}
+      .catalog{grid-template-columns:repeat(2, 1fr)}
+    }
+    @media (max-width: 980px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{display:none}
+      .catalog{grid-template-columns:1fr}
+    }
+  .cfg-grid .slider-row{ margin:0; }
+      .cfg-footer{ margin-top:10px; }
+    }
+
+
+
+
+    /* Clickable plan cards */
+    .plan{ cursor:pointer; transition:transform .06s ease, box-shadow .12s ease, border-color .12s ease; }
+    .plan:hover{
+      border-color:rgba(90,42,106,.28);
+      box-shadow:0 10px 22px rgba(0,0,0,.06);
+      transform:translateY(-1px);
+    }
+    .plan.selected{
+      border-color:rgba(90,42,106,.45);
+      box-shadow:0 14px 28px rgba(0,0,0,.08);
+      background:rgba(90,42,106,.03);
+      position:relative;
+    }
+    .plan.selected:after{
+      content:"✓";
+      position:absolute;
+      top:10px; right:10px;
+      width:26px;height:26px;border-radius:10px;
+      display:grid;place-items:center;
+      font-weight:900;
+      color:var(--brand-2);
+      background:#fff;
+      border:1px solid rgba(90,42,106,.22);
+    }
+
+    /* Sticky create bar */
+    .stickybar{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      background:rgba(245,245,247,.88);
+      backdrop-filter:saturate(180%) blur(10px);
+      border-top:1px solid var(--line);
+      padding:12px 0;
+      z-index:50;
+    }
+    .sticky-inner{
+      max-width:1180px;
+      margin:0 auto;
+      padding:0 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    .sticky-kv{
+      display:flex;
+      gap:16px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .sticky-item{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:8px 10px;
+      min-width:220px;
+    }
+    .sticky-item .k{
+      font-size:11px;
+      color:var(--muted);
+      font-weight:900;
+      letter-spacing:.02em;
+      margin-bottom:2px;
+    }
+    .sticky-item .v{
+      font-weight:900;
+      color:#222;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .sticky-item .v .warn{
+      color:#8b6a14;
+      background:#fff7ea;
+      border:1px solid #f0dfc5;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:11.5px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .sticky-price{
+      display:flex;
+      align-items:baseline;
+      gap:10px;
+      font-weight:900;
+      color:var(--brand-2);
+    }
+    .sticky-price .num{font-size:22px}
+    .sticky-price .per{font-size:12.5px;color:var(--muted);font-weight:800}
+    .cta{
+      border:1px solid rgba(90,42,106,.28);
+      background:var(--brand);
+      color:#fff;
+      border-radius:12px;
+      padding:10px 14px;
+      font-weight:900;
+      min-width:180px;
+      text-align:center;
+      user-select:none;
+      cursor:pointer;
+    }
+
+    /* Make space for sticky bar */
+    .page-pad{ padding-bottom:94px; }
+
+    /* Clickable marketplace cards */
+    .app{ cursor:pointer; transition:transform .06s ease, box-shadow .12s ease, border-color .12s ease; }
+    .app:hover{
+      border-color:rgba(90,42,106,.28);
+      box-shadow:0 10px 22px rgba(0,0,0,.06);
+      transform:translateY(-1px);
+    }
+    .app.selected{
+      border-color:rgba(90,42,106,.45);
+      box-shadow:0 14px 28px rgba(0,0,0,.08);
+      background:rgba(90,42,106,.03);
+      position:relative;
+    }
+    .app.selected:after{
+      content:"✓";
+      position:absolute;
+      top:10px; right:10px;
+      width:26px;height:26px;border-radius:10px;
+      display:grid;place-items:center;
+      font-weight:900;
+      color:var(--brand-2);
+      background:#fff;
+      border:1px solid rgba(90,42,106,.22);
+    }
+
+    @media (max-width: 980px){
+      .sticky-item{min-width:unset; flex:1 1 260px;}
+      .cta{flex:1 1 220px;}
+    }
+
+
+    /* Clickable configurable server block */
+    .cfg{ cursor:pointer; transition:transform .06s ease, box-shadow .12s ease, border-color .12s ease; }
+    .cfg:hover{
+      border-color:rgba(90,42,106,.28);
+      box-shadow:0 10px 22px rgba(0,0,0,.06);
+      transform:translateY(-1px);
+    }
+    .cfg.selected{
+      border-color:rgba(90,42,106,.45);
+      box-shadow:0 14px 28px rgba(0,0,0,.08);
+      background:rgba(90,42,106,.03);
+      position:relative;
+    }
+    .cfg.selected:after{
+      content:"✓";
+      position:absolute;
+      top:10px; right:10px;
+      width:26px;height:26px;border-radius:10px;
+      display:grid;place-items:center;
+      font-weight:900;
+      color:var(--brand-2);
+      background:#fff;
+      border:1px solid rgba(90,42,106,.22);
+    }
+
+
+
+/* Mobile burger + drawer */
+    #navToggle{ display:none; }
+    .burger{
+      display:none;
+      width:38px; height:38px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.12);
+      color:#fff;
+      cursor:pointer;
+      align-items:center;
+      justify-content:center;
+      user-select:none;
+    }
+    .burger span{
+      display:block;
+      width:18px; height:2px;
+      background:#fff;
+      border-radius:2px;
+      position:relative;
+    }
+    .burger span:before,
+    .burger span:after{
+      content:"";
+      position:absolute;
+      left:0;
+      width:18px; height:2px;
+      background:#fff;
+      border-radius:2px;
+    }
+    .burger span:before{ top:-6px; }
+    .burger span:after{ top:6px; }
+
+    .drawer-overlay{
+      display:none;
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.35);
+      z-index:60;
+    }
+    .drawer{
+      position:fixed;
+      top:0; bottom:0; left:0;
+      width:280px;
+      background:#fff;
+      border-right:1px solid var(--line);
+      transform:translateX(-105%);
+      transition:transform .18s ease;
+      z-index:61;
+      padding:14px 12px;
+      overflow:auto;
+    }
+    .drawer .drawer-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:6px 6px 12px;
+      border-bottom:1px solid var(--line);
+      margin-bottom:10px;
+    }
+    .drawer .close{
+      width:36px; height:36px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#fff;
+      cursor:pointer;
+      display:grid; place-items:center;
+      font-weight:900;
+      color:var(--brand-2);
+    }
+
+    /* When opened */
+    #navToggle:checked ~ .drawer{ transform:translateX(0); }
+    #navToggle:checked ~ .drawer-overlay{ display:block; }
+
+    /* Mobile behavior */
+    @media (max-width: 900px){
+      /* hide desktop sidebar */
+      .sidebar{ display:none; }
+      /* show burger on topbar */
+      .topbar .right{ gap:10px; }
+      .burger{ display:inline-flex; }
+    }
+
+
+    .top-actions{ margin-left:auto; display:flex; align-items:center; gap:10px; }
+    @media (max-width: 900px){
+      .top-actions{ gap:8px; }
+      .top-actions .pill{ display:none; } /* keep header clean on mobile */
+      .burger{ display:inline-flex; }
+    }
+
+/* Configurable server (sliders) */
+    .cfg{
+      margin-top:8px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:14px;
+      background:#fff;
+    }
+    .cfg-title{
+      font-weight:900;
+      color:var(--brand-2);
+      margin-bottom:10px;
+    }
+    .slider-row{margin:12px 0}
+    .slider-row .lbl{
+      display:flex;
+      justify-content:space-between;
+      font-size:12.5px;
+      font-weight:900;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    input[type="range"]{width:100%}
+    .cfg-footer{
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      gap:12px;
+      margin-top:12px;
+      flex-wrap:wrap;
+    }
+
+.cfg-grid{
+      display:block;
+    }
+    @media (min-width: 800px){
+      .cfg-grid{
+        display:grid;
+        grid-template-columns:repeat(3, 1fr);
+        gap:18px;
+        align-items:start;
+      }
+
+</style>
+</head>
+<body>
+<!-- Mobile drawer -->
+<input id="navToggle" type="checkbox"/>
+<label aria-label="Закрыть меню" class="drawer-overlay" for="navToggle"></label>
+<nav aria-label="Главное меню" class="drawer">
+<div class="drawer-head">
+<div style="display:flex;align-items:center;gap:10px;">
+<div class="name">FATMETAL</div>
+</div>
+</div>
+<label aria-label="Закрыть" class="close" for="navToggle">✕</label>
+<div class="nav">
+<div class="nav-title">Каталог</div>
+<a href="#">Выделенные серверы</a>
+<a class="active" href="#">Виртуальные серверы</a>
+<div class="nav-title" style="margin-top:10px;">Мои услуги</div>
+<a href="#">Мои услуги</a>
+<a href="#">Резервные копии</a>
+<a href="#">SSH-ключи <span class="tag">в разработке</span></a>
+<a href="#">API <span class="tag">в разработке</span></a>
+</div>
+</nav>
+<header class="topbar">
+<div class="logo">
+<div class="mark">F</div>
+<div>FATMETAL</div>
+</div>
+<div class="top-actions">
+<div class="pill">💰 460 ₽</div>
+<div class="pill">🔔 Уведомления ▾</div>
+<div class="pill">❔ Помощь ▾</div>
+<div class="pill"><span class="avatar"></span> prokopovich@gmail.com ▾</div>
+<label aria-label="Открыть меню" class="burger" for="navToggle"><span></span></label>
+</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="nav">
+<div class="nav-title">Каталог</div>
+<a href="#">Выделенные серверы</a>
+<a class="active" href="#">Виртуальные серверы</a>
+<div class="nav-title" style="margin-top:10px;">Мои услуги</div>
+<a href="#">Мои услуги</a>
+<a href="#">Резервные копии</a>
+<a href="#">SSH-ключи <span class="tag">в разработке</span></a>
+<a href="#">API <span class="tag">в разработке</span></a>
+</div>
+</aside>
+<main class="content page-pad">
+<h1>Виртуальные серверы</h1>
+<!-- Payment period -->
+<div class="block">
+<div aria-label="Период оплаты" class="seg">
+<div class="opt active">Оплата за месяц</div>
+<div class="opt">Оплата за год −10%</div>
+</div>
+<div class="helper">Перейдите на ежегодную оплату, чтобы сэкономить 10%</div>
+<!-- Plans row (as in PDF: 3 cards with "Оформить") -->
+<div class="helper" style="margin-top:10px;">Выберите конфигурацию: кликните по карточке или используйте настраиваемый сервер.</div>
+<div class="plans">
+<div class="plan">
+<div class="name">CPU2-RAM4-DISK50</div>
+<div class="spec"><span>CPU:</span> 2 ядра • 2.5 ГГц</div>
+<div class="spec"><span>RAM:</span> 4 ГБ</div>
+<div class="spec"><span>NVMe:</span> 50 ГБ</div>
+<div class="price"><div class="num">3 600 ₽</div><div class="per">в месяц</div></div>
+</div>
+<div class="plan">
+<div class="name">CPU2-RAM4-DISK50</div>
+<div class="spec"><span>CPU:</span> 2 ядра • 2.5 ГГц</div>
+<div class="spec"><span>RAM:</span> 4 ГБ</div>
+<div class="spec"><span>NVMe:</span> 50 ГБ</div>
+<div class="price"><div class="num">3 600 ₽</div><div class="per">в месяц</div></div>
+</div>
+<div class="plan">
+<div class="name">CPU2-RAM4-DISK50</div>
+<div class="spec"><span>CPU:</span> 2 ядра • 2.5 ГГц</div>
+<div class="spec"><span>RAM:</span> 4 ГБ</div>
+<div class="spec"><span>NVMe:</span> 50 ГБ</div>
+<div class="price"><div class="num">3 600 ₽</div><div class="per">в месяц</div></div>
+</div>
+</div>
+<!-- Configurable server block (as in PDF: sliders + bottom price + button) -->
+<div class="cfg selected" style="margin-top:14px;">
+<div class="cfg-title">Настраиваемый сервер</div>
+<div class="cfg-grid">
+<div class="slider-row">
+<div class="lbl"><span>CPU, vCore:</span><span><b style="color:var(--brand-2)">10</b> / 16</span></div>
+<input max="16" min="1" type="range" value="10"/>
+<div class="lbl" style="margin-top:4px;"><span>1</span><span>16</span></div>
+</div>
+<div class="slider-row">
+<div class="lbl"><span>RAM, ГБ:</span><span><b style="color:var(--brand-2)">48</b> / 64</span></div>
+<input max="64" min="1" type="range" value="48"/>
+<div class="lbl" style="margin-top:4px;"><span>1</span><span>64</span></div>
+</div>
+<div class="slider-row">
+<div class="lbl"><span>Диск NVMe, ГБ:</span><span><b style="color:var(--brand-2)">200</b> / 500</span></div>
+<input max="500" min="10" type="range" value="200"/>
+<div class="lbl" style="margin-top:4px;"><span>10</span><span>500</span></div>
+</div>
+</div>
+<div class="cfg-footer">
+<div class="price" style="margin:0;">
+<div class="num">3 600 ₽</div><div class="per">в месяц</div>
+</div>
+</div>
+</div>
+<!-- Network guarantee -->
+<div class="helper" style="margin-top:14px;display:flex;align-items:center;gap:10px;">
+<span style="font-size:16px;">🌐</span>
+<span>
+            Все виртуальные серверы подключены к интернету на скорости до
+            <b style="color:var(--brand-2)">100 Мбит/с</b> и получают
+            <b style="color:var(--brand-2)">реальный публичный IPv4-адрес</b> без NAT.
+          </span>
+</div>
+</div>
+<!-- Marketplace / app install -->
+<div class="block">
+<h2>Установка приложений</h2>
+<div aria-label="Способ установки" class="tabs">
+<div class="tab active">Готовые приложения</div>
+<div class="tab">Установка из бекапа</div>
+<div class="tab">Установка из образа</div>
+</div>
+<div class="helper">Выберите готовые приложения для установки на виртуальный сервер</div>
+<div class="group-title">Операционные системы</div>
+<div class="catalog">
+<div class="app">
+<div class="top">
+<div class="icon">🐧</div>
+<div>
+<div class="name">Ubuntu</div>
+<div class="ver">Версия 24.04</div>
+<div class="desc">LTS для большинства задач: веб, CI, базы, DevOps.</div>
+</div>
+<div class="caret">⌄</div>
+</div>
+</div>
+<div class="app">
+<div class="top">
+<div class="icon">🌀</div>
+<div>
+<div class="name">Debian</div>
+<div class="ver">Версия 13</div>
+<div class="desc">LTS для большинства задач: веб, CI, базы, DevOps.</div>
+</div>
+<div class="caret">⌄</div>
+</div>
+</div>
+<div class="app">
+<div class="top">
+<div class="icon">🌿</div>
+<div>
+<div class="name">CentOS</div>
+<div class="ver">Версия 10</div>
+<div class="desc">LTS для большинства задач: веб, CI, базы, DevOps.</div>
+</div>
+<div class="caret">⌄</div>
+</div>
+</div>
+<div class="app">
+<div class="top">
+<div class="icon">⭐</div>
+<div>
+<div class="name">Astra Linux CE</div>
+<div class="ver">Версия 2.12</div>
+<div class="desc">LTS для большинства задач: веб, CI, базы, DevOps.</div>
+</div>
+<div class="caret">⌄</div>
+</div>
+</div>
+<div class="app">
+<div class="top">
+<div class="icon">🟦</div>
+<div>
+<div class="name">AlmaLinux</div>
+<div class="ver">Версия 10.0</div>
+<div class="desc">LTS для большинства задач: веб, CI, базы, DevOps.</div>
+</div>
+<div class="caret">⌄</div>
+</div>
+</div>
+<div class="meta-row">
+<span class="hint">LTS</span>
+<span class="muted" style="font-weight:900;">Выбрать →</span>
+</div>
+</div>
+<div class="group-title" style="margin-top:14px;">Приложения</div>
+<div class="catalog">
+<div class="app">
+<div class="top">
+<div class="icon">1C</div>
+<div>
+<div class="name">BitrixVM + CentOS</div>
+<div class="ver">Версия 9</div>
+<div class="desc">Готовый стек для 1С-Битрикс: веб, PHP, БД — из коробки.</div>
+</div>
+<div class="caret">⌄</div>
+</div>
+</div>
+<div class="app">
+<div class="top">
+<div class="icon">⚙</div>
+<div>
+<div class="name">ispmanager 6 lite</div>
+<div class="ver">Ubuntu 24.04</div>
+<div class="desc">Готовый стек для 1С-Битрикс: веб, PHP, БД — из коробки.</div>
+</div>
+<div class="caret">⌄</div>
+</div>
+</div>
+<div class="app">
+<div class="top">
+<div class="icon">W</div>
+<div>
+<div class="name">WordPress</div>
+<div class="ver">Ubuntu 24.04</div>
+<div class="desc">Готовый стек для 1С-Битрикс: веб, PHP, БД — из коробки.</div>
+</div>
+<div class="caret">⌄</div>
+</div>
+</div>
+<div class="app">
+<div class="top">
+<div class="icon">GL</div>
+<div>
+<div class="name">GitLab</div>
+<div class="ver">CE</div>
+<div class="desc">Готовый стек для 1С-Битрикс: веб, PHP, БД — из коробки.</div>
+</div>
+<div class="caret">⌄</div>
+</div>
+</div>
+<div class="app">
+<div class="top">
+<div class="icon">NC</div>
+<div>
+<div class="name">NextCloud</div>
+<div class="ver">Ubuntu 24.04</div>
+<div class="desc">Готовый стек для 1С-Битрикс: веб, PHP, БД — из коробки.</div>
+</div>
+<div class="caret">⌄</div>
+</div>
+</div>
+<div class="meta-row">
+<span class="hint">CMS</span>
+<span class="muted" style="font-weight:900;">Выбрать →</span>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Sticky create bar (single final action) -->
+<div class="stickybar">
+<div class="sticky-inner">
+<div class="sticky-kv">
+<div class="sticky-item">
+<div class="k">Конфигурация</div>
+<div class="v">Настраиваемая · 10 vCPU · 48 ГБ · 200 ГБ NVMe</div>
+</div>
+<div class="sticky-item">
+<div class="k">ОС / приложение</div>
+<div class="v"><span class="warn">Выберите ОС или приложение</span></div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+<div class="sticky-price">
+<div class="num">3 600 ₽</div>
+<div class="per">в месяц</div>
+</div>
+<div class="cta">Создать сервер</div>
+</div>
+</div>
+</div>
+</body>
+</html>
