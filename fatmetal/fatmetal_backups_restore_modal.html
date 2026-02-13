@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>FATMETAL — Резервные копии</title>
+<style>
+
+    :root{
+      --brand:#552C56;
+      --brand-2:#4b2359;
+      --bg:#f5f5f7;
+      --card:#fff;
+      --text:#1a1a1a;
+      --muted:#6b6f76;
+      --line:#e3e4e8;
+      --shade:#f1f1f4;
+      --radius:14px;
+      --radius-lg:16px;
+      --btn-radius:8px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:"Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      font-size:15px;
+      font-weight:300;
+      line-height:1.45;
+    }
+
+    /* Topbar (as in your UI) */
+    .topbar{
+      height:73px; /* 30% taller than 56px */
+      background:var(--brand);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      padding:0 18px 0 28px; /* extra left offset */
+      gap:18px;
+      position:sticky;
+      top:0;
+      z-index:6000;
+      overflow:visible;
+    }
+    .logo{
+      display:flex; align-items:center; gap:10px;
+      font-weight:600; letter-spacing:.3px;
+    }
+    .logo img{
+      display:block;
+      height:36px; /* 30% larger than 28px */
+      width:auto;
+    }
+    .top-actions{
+      margin-left:auto;
+      display:flex; align-items:center; gap:22px;
+      font-weight:600;
+      opacity:.95;
+    }
+    .nav-action{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border:none;
+      background:transparent;
+      color:#fff;
+      font-weight:600;
+      cursor:pointer;
+      white-space:nowrap;
+      font-size:15px;
+    }
+    .dropdown{
+      position:relative;
+      display:inline-flex;
+      align-items:center;
+    }
+    .dropdown .nav-action{ cursor:pointer; }
+    .dropdown-menu{
+      position:absolute;
+      top:calc(100% + 8px);
+      right:0;
+      min-width:200px;
+      background:#fff;
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:12px;
+      box-shadow:0 14px 28px rgba(0,0,0,.12);
+      padding:8px;
+      display:none;
+      z-index:7000;
+    }
+    .dropdown.open .dropdown-menu{ display:block; }
+    .dropdown-menu .item{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:8px;
+      font-weight:600;
+      color:var(--text);
+      text-decoration:none;
+      white-space:nowrap;
+    }
+    .dropdown-menu .item:hover{ background:var(--shade); }
+    .dropdown-menu .muted-item{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:600;
+      padding:6px 10px;
+    }
+    .avatar{
+      width:30px;height:30px;border-radius:50%;
+      background:rgba(255,255,255,.28);
+      display:inline-block;
+    }
+
+    /* Layout (sidebar + content) */
+    .layout{
+      display:grid;
+      grid-template-columns:260px 1fr;
+      min-height:calc(100vh - 56px);
+    }
+    .sidebar{
+      background:#fff;
+      border-right:1px solid var(--line);
+      padding:18px 0;
+    }
+    .nav-title{
+      padding:0 18px 8px;
+      color:var(--muted);
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-size:11px;
+    }
+    .nav a{
+      display:block;
+      padding:10px 18px;
+      text-decoration:none;
+      color:var(--text);
+      font-weight:600;
+    }
+    .nav a:hover{background:var(--shade)}
+    .nav a.active{
+      color:var(--brand-2);
+      background:rgba(90,42,106,.06);
+      border-left:4px solid var(--brand);
+      padding-left:14px;
+    }
+    .nav .tag{
+      display:inline-block;
+      margin-left:8px;
+      font-size:11px;
+      font-weight:600;
+      padding:2px 8px;
+      border-radius:999px;
+      background:#f3efe5;
+      color:#7a5a1a;
+      border:1px solid #ead9bd;
+      vertical-align:middle;
+    }
+
+    .content{padding:22px;}
+    h1{
+      margin:0 0 14px;
+      font-size:22px;
+      letter-spacing:.2px;
+    }
+    h2{
+      margin:0 0 10px;
+      font-size:18px;
+      letter-spacing:.1px;
+    }
+    .muted{color:var(--muted); font-weight:600}
+
+    /* Small segmented control like in PDF */
+    .seg{
+      display:inline-flex;
+      border:1px solid var(--line);
+      border-radius:10px;
+      overflow:hidden;
+      background:#fff;
+    }
+    .seg .opt{
+      padding:7px 12px;
+      font-weight:600;
+      font-size:12.5px;
+      color:var(--muted);
+      border-right:1px solid var(--line);
+      white-space:nowrap;
+    }
+    .seg .opt:last-child{border-right:none}
+    .seg .opt.active{
+      background:rgba(90,42,106,.08);
+      color:var(--brand-2);
+    }
+    .helper{
+      margin-top:8px;
+      font-size:12.5px;
+      color:var(--muted);
+      font-weight:600;
+    }
+
+    /* Cards / blocks */
+    .block{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius-lg);
+      padding:16px;
+      box-shadow:0 10px 22px rgba(0,0,0,.04);
+      margin-bottom:16px;
+    }
+    /* GRID RULES (DO NOT CHANGE):
+   - Server configuration presets (.plans) MUST be 3 columns on desktop.
+   - Marketplace OS/App cards (.catalog) MUST be 4 columns on desktop.
+   Keep these grids independent. Do not reuse one grid class for both.
+*/
+.plans{
+      display:grid;
+      grid-template-columns:repeat( 3, 1fr); /* presets: 3 in a row */
+      gap:14px;
+      margin-top:12px;
+    }
+    .plan{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:14px;
+      background:#fff;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:150px;
+    }
+    .plan .name{
+      font-weight:600;
+      color:var(--brand-2);
+      letter-spacing:.1px;
+    }
+    .plan .spec{
+      font-weight:600;
+      font-size:12.5px;
+      color:#3b3d42;
+    }
+    .plan .spec span{color:var(--muted); font-weight:600}
+    .price{
+      margin-top:auto;
+      display:flex;
+      align-items:baseline;
+      gap:8px;
+      font-weight:600;
+      color:var(--brand-2);
+    }
+    .price .num{font-size:20px}
+    .price .per{font-size:12.5px; color:var(--muted); font-weight:600}
+    .btn{
+      margin-top:8px;
+      border:1px solid rgba(90,42,106,.28);
+      background:var(--brand);
+      color:#fff;
+      border-radius:var(--btn-radius);
+      padding:9px 12px;
+      font-weight:600;
+      text-align:center;
+      user-select:none;
+      cursor:default;
+    }
+
+    /* Marketplace area (as in PDF) */
+    .tabs{
+      display:flex;
+      gap:8px;
+      margin-top:8px;
+    }
+    .tab{
+      padding:7px 10px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-weight:600;
+      font-size:12.5px;
+      color:var(--muted);
+      user-select:none;
+    }
+    .tab.active{
+      background:rgba(90,42,106,.08);
+      color:var(--brand-2);
+      border-color:rgba(90,42,106,.22);
+    }
+    .catalog{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: repeat( 4, 1fr); /* marketplace: 4 in a row */
+      gap:12px
+    }
+
+    .app{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:14px;
+      background:#fff;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:132px; /* taller and less 'stretched' */
+    }
+    .app .top{
+      display:flex; gap:10px; align-items:flex-start;
+    }
+    .app .desc{
+      margin-top:2px;
+      font-size:12.5px;
+      line-height:1.35;
+      color:var(--muted);
+      font-weight:600;
+    }
+    .app .meta-row{
+      margin-top:auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .app .hint{
+      font-size:11.5px;
+      color:var(--muted);
+      font-weight:600;
+      background:var(--shade);
+      border:1px solid var(--line);
+      padding:3px 8px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+
+
+    .group-title{
+      margin-top:10px;
+      font-weight:600;
+      color:var(--muted);
+      font-size:12px;
+      text-transform:none;
+    }
+
+    /* responsive */
+    @media (max-width: 1100px){
+      .plans{grid-template-columns:1fr}
+      .catalog{grid-template-columns:repeat(2, 1fr)}
+    }
+    @media (max-width: 980px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{display:none}
+      .catalog{grid-template-columns:1fr}
+    }
+  .cfg-grid .slider-row{ margin:0; }
+      .cfg-footer{ margin-top:10px; }
+    }
+
+
+
+
+    /* Clickable plan cards */
+    .plan{ cursor:pointer; transition:transform .06s ease, box-shadow .12s ease, border-color .12s ease; }
+    .plan:hover{
+      border-color:rgba(90,42,106,.28);
+      box-shadow:0 10px 22px rgba(0,0,0,.06);
+      transform:translateY(-1px);
+    }
+    .plan.selected{
+      border-color:rgba(90,42,106,.45);
+      box-shadow:0 14px 28px rgba(0,0,0,.08);
+      background:rgba(90,42,106,.03);
+      position:relative;
+    }
+    .plan.selected:after{
+      content:"✓";
+      position:absolute;
+      top:10px; right:10px;
+      width:26px;height:26px;border-radius:10px;
+      display:grid;place-items:center;
+      font-weight:600;
+      color:var(--brand-2);
+      background:#fff;
+      border:1px solid rgba(90,42,106,.22);
+    }
+
+    /* Sticky create bar */
+    .stickybar{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      background:rgba(245,245,247,.88);
+      backdrop-filter:saturate(180%) blur(10px);
+      border-top:1px solid var(--line);
+      padding:12px 0;
+      z-index:50;
+    }
+    .sticky-inner{
+      max-width:1180px;
+      margin:0 auto;
+      padding:0 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    .sticky-kv{
+      display:flex;
+      gap:16px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .sticky-item{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:8px 10px;
+      min-width:220px;
+    }
+    .sticky-item .k{
+      font-size:11px;
+      color:var(--muted);
+      font-weight:600;
+      letter-spacing:.02em;
+      margin-bottom:2px;
+    }
+    .sticky-item .v{
+      font-weight:600;
+      color:#222;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .sticky-item .v .warn{
+      color:#8b6a14;
+      background:#fff7ea;
+      border:1px solid #f0dfc5;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:11.5px;
+      font-weight:600;
+      white-space:nowrap;
+    }
+    .sticky-price{
+      display:flex;
+      align-items:baseline;
+      gap:10px;
+      font-weight:600;
+      color:var(--brand-2);
+    }
+    .sticky-price .num{font-size:22px}
+    .sticky-price .per{font-size:12.5px;color:var(--muted);font-weight:600}
+    .cta{
+      border:1px solid rgba(90,42,106,.28);
+      background:var(--brand);
+      color:#fff;
+      border-radius:var(--btn-radius);
+      padding:10px 14px;
+      font-weight:600;
+      min-width:180px;
+      text-align:center;
+      user-select:none;
+      cursor:pointer;
+    }
+
+    /* No sticky bar on checkout */
+    .page-pad{ padding-bottom:24px; }
+
+    /* Clickable marketplace cards */
+    .app{ cursor:pointer; transition:transform .06s ease, box-shadow .12s ease, border-color .12s ease; }
+    .app:hover{
+      border-color:rgba(90,42,106,.28);
+      box-shadow:0 10px 22px rgba(0,0,0,.06);
+      transform:translateY(-1px);
+    }
+    .app.selected{
+      border-color:rgba(90,42,106,.45);
+      box-shadow:0 14px 28px rgba(0,0,0,.08);
+      background:rgba(90,42,106,.03);
+      position:relative;
+    }
+    .app.selected:after{
+      content:"✓";
+      position:absolute;
+      top:10px; right:10px;
+      width:26px;height:26px;border-radius:10px;
+      display:grid;place-items:center;
+      font-weight:600;
+      color:var(--brand-2);
+      background:#fff;
+      border:1px solid rgba(90,42,106,.22);
+    }
+
+    @media (max-width: 980px){
+      .sticky-item{min-width:unset; flex:1 1 260px;}
+      .cta{flex:1 1 220px;}
+    }
+
+
+    /* Clickable configurable server block */
+    .cfg{ cursor:pointer; transition:transform .06s ease, box-shadow .12s ease, border-color .12s ease; }
+    .cfg:hover{
+      border-color:rgba(90,42,106,.28);
+      box-shadow:0 10px 22px rgba(0,0,0,.06);
+      transform:translateY(-1px);
+    }
+    .cfg.selected{
+      border-color:rgba(90,42,106,.45);
+      box-shadow:0 14px 28px rgba(0,0,0,.08);
+      background:rgba(90,42,106,.03);
+      position:relative;
+    }
+    .cfg.selected:after{
+      content:"✓";
+      position:absolute;
+      top:10px; right:10px;
+      width:26px;height:26px;border-radius:10px;
+      display:grid;place-items:center;
+      font-weight:600;
+      color:var(--brand-2);
+      background:#fff;
+      border:1px solid rgba(90,42,106,.22);
+    }
+
+
+
+/* Mobile burger + drawer */
+    #navToggle{ display:none; }
+    .burger{
+      display:none;
+      width:38px; height:38px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.12);
+      color:#fff;
+      cursor:pointer;
+      align-items:center;
+      justify-content:center;
+      user-select:none;
+    }
+    .burger span{
+      display:block;
+      width:18px; height:2px;
+      background:#fff;
+      border-radius:2px;
+      position:relative;
+    }
+    .burger span:before,
+    .burger span:after{
+      content:"";
+      position:absolute;
+      left:0;
+      width:18px; height:2px;
+      background:#fff;
+      border-radius:2px;
+    }
+    .burger span:before{ top:-6px; }
+    .burger span:after{ top:6px; }
+
+    .drawer-overlay{
+      display:none;
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.35);
+      z-index:60;
+    }
+    .drawer{
+      position:fixed;
+      top:0; bottom:0; left:0;
+      width:280px;
+      background:#fff;
+      border-right:1px solid var(--line);
+      transform:translateX(-105%);
+      transition:transform .18s ease;
+      z-index:61;
+      padding:14px 12px;
+      overflow:auto;
+    }
+    .drawer .drawer-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:6px 6px 12px;
+      border-bottom:1px solid var(--line);
+      margin-bottom:10px;
+    }
+    .drawer .close{
+      width:36px; height:36px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#fff;
+      cursor:pointer;
+      display:grid; place-items:center;
+      font-weight:600;
+      color:var(--brand-2);
+    }
+
+    /* When opened */
+    #navToggle:checked ~ .drawer{ transform:translateX(0); }
+    #navToggle:checked ~ .drawer-overlay{ display:block; }
+
+    /* Mobile behavior */
+    @media (max-width: 900px){
+      /* hide desktop sidebar */
+      .sidebar{ display:none; }
+      /* show burger on topbar */
+      .topbar .right{ gap:10px; }
+      .burger{ display:inline-flex; }
+    }
+
+
+    .top-actions{ margin-left:auto; display:flex; align-items:center; gap:22px; }
+    @media (max-width: 900px){
+      .top-actions{ gap:14px; }
+      .top-actions .nav-action{ display:none; } /* keep header clean on mobile */
+      .burger{ display:inline-flex; }
+    }
+
+/* Configurable server (sliders) */
+    .cfg{
+      margin-top:8px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:14px;
+      background:#fff;
+    }
+    .cfg-title{
+      font-weight:600;
+      color:var(--brand-2);
+      margin-bottom:10px;
+    }
+    .slider-row{margin:12px 0}
+    .slider-row .lbl{
+      display:flex;
+      justify-content:space-between;
+      font-size:12.5px;
+      font-weight:600;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    input[type="range"]{width:100%}
+    .cfg-footer{
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      gap:12px;
+      margin-top:12px;
+      flex-wrap:wrap;
+    }
+
+.cfg-grid{
+      display:block;
+    }
+    @media (min-width: 800px){
+      .cfg-grid{
+        display:grid;
+        grid-template-columns:repeat(3, 1fr);
+        gap:18px;
+        align-items:start;
+      }
+    }
+
+
+    /* Checkout */
+    .checkout{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:18px;
+      align-items:start;
+    }
+    .checkout-main{
+      display:grid;
+      gap:18px;
+    }
+    .checkout-card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius-lg);
+      padding:18px;
+      box-shadow:0 10px 22px rgba(0,0,0,.04);
+    }
+    .checkout-head h2{
+      margin:0 0 6px;
+      font-size:18px;
+      letter-spacing:.1px;
+      font-weight:700;
+      color:var(--brand-2);
+    }
+    .checkout-section{
+      margin-top:14px;
+      padding-top:14px;
+      border-top:1px solid var(--line);
+    }
+    .section-title{
+      font-weight:700;
+      font-size:18px;
+      text-transform:none;
+      color:var(--brand-2);
+      letter-spacing:.1px;
+      margin-bottom:10px;
+    }
+    .kv-grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:0;
+    }
+    .kv-row{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:8px 0;
+      border-bottom:1px dashed var(--line);
+    }
+    .kv-row:last-child{ border-bottom:none; }
+    .kv-row .k{ font-weight:600; color:var(--muted); font-size:15px; }
+    .kv-row .v{ font-weight:600; color:var(--text); }
+
+    .addon-list{
+      display:grid;
+      gap:0;
+    }
+    .addon{
+      display:grid;
+      grid-template-columns: 1.1fr 220px 90px;
+      align-items:center;
+      gap:10px;
+      padding:10px 0;
+      border-bottom:1px dashed var(--line);
+    }
+    .addon .control{ justify-self:start; min-width:220px; margin-left:0; }
+    .addon .control .stepper{ width:fit-content; }
+    .addon-backup{
+      grid-template-columns: 1.1fr 220px 90px;
+    }
+    .addon-backup .control{ min-width:unset; }
+    .addon:last-child{ border-bottom:none; }
+    .addon .k{ font-weight:700; color:var(--text); font-size:15px; opacity:.85; }
+    .addon .v{ font-weight:600; color:var(--brand-2); }
+    .addon .p{ font-weight:600; color:var(--brand-2); white-space:nowrap; min-width:90px; text-align:right; justify-self:end; }
+    .addon select{
+      width:100%;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-weight:600;
+    }
+    .speed-toggle{
+      display:inline-flex;
+      border:1px solid var(--line);
+      border-radius:10px;
+      overflow:hidden;
+      background:#fff;
+      align-self:flex-start;
+      min-width:220px;
+    }
+    .speed-toggle button{
+      display:inline-flex;
+      align-items:center;
+      border:none;
+      background:#fff;
+      padding:6px 10px;
+      font-weight:600;
+      font-size:15px;
+      cursor:pointer;
+      color:var(--muted);
+      min-width:100px;
+      justify-content:center;
+    }
+    .addon .sub{
+      display:block;
+      font-size:13.5px;
+      color:var(--muted);
+      font-weight:600;
+      margin-top:2px;
+      line-height:1.4;
+    }
+    .addon .sub.full{
+      grid-column:1 / -1;
+      margin-top:6px;
+    }
+    .speed-toggle button.active{
+      background:rgba(90,42,106,.1);
+      color:var(--brand-2);
+    }
+    .speed-toggle button:focus{ outline:2px solid rgba(90,42,106,.35); outline-offset:-2px; }
+    .ip-toggle button{
+      cursor:default;
+    }
+    .ip-toggle button[disabled]{
+      opacity:.6;
+    }
+    .toggle{
+      position:relative;
+      width:44px;
+      height:24px;
+      border-radius:999px;
+      display:inline-block;
+      background:#d7d9df;
+      border:1px solid #c9cbd3;
+      opacity:1;
+      pointer-events:none;
+    }
+    .toggle:after{
+      content:"";
+      position:absolute;
+      top:2px; left:22px;
+      width:18px; height:18px;
+      border-radius:50%;
+      background:#fff;
+      box-shadow:0 1px 2px rgba(0,0,0,.15);
+    }
+    .toggle.on{
+      background:rgba(90,42,106,.65);
+      border-color:rgba(90,42,106,.45);
+      box-shadow:inset 0 1px 2px rgba(0,0,0,.15);
+    }
+    .cloud-title{
+      font-size:18px;
+      font-weight:700;
+      text-transform:none;
+      color:var(--brand-2);
+      letter-spacing:.1px;
+      margin-bottom:6px;
+    }
+    .cloud-sub{
+      font-size:13.5px;
+      color:var(--muted);
+      font-weight:600;
+      margin-bottom:10px;
+    }
+    .cloud-textarea{
+      width:100%;
+      min-height:110px;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#f8f8fb;
+      font-weight:400;
+      font-size:13.5px;
+      line-height:1.5;
+      color:#3b3d42;
+      font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,.06);
+      resize:vertical;
+    }
+    .cloud-textarea::placeholder{
+      color:#8b9097;
+    }
+    .stepper{
+      display:inline-flex;
+      align-items:center;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#fff;
+      overflow:hidden;
+      width:auto;
+      min-width:0;
+      flex:0 0 auto;
+    }
+    .stepper button,
+    .stepper span{
+      flex:0 0 auto;
+    }
+    .stepper button{
+      width:28px;
+      height:28px;
+      border:none;
+      background:#f5f5f7;
+      font-weight:600;
+      cursor:default;
+    }
+    .stepper span{
+      width:34px;
+      text-align:center;
+      font-weight:600;
+    }
+
+
+    .checkout-aside .aside-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:var(--radius-lg);
+      padding:16px;
+      box-shadow:0 10px 22px rgba(0,0,0,.04);
+      position:sticky;
+      top:90px;
+    }
+    .aside-title{
+      font-weight:600;
+      margin-bottom:10px;
+    }
+    .aside-row{
+      display:flex;
+      justify-content:space-between;
+      font-weight:600;
+      margin:8px 0;
+    }
+    .aside-price{
+      color:var(--brand-2);
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .aside-divider{
+      height:1px;
+      background:var(--line);
+      margin:10px 0;
+    }
+    .aside-total{
+      display:flex;
+      justify-content:space-between;
+      color:var(--brand-2);
+      font-weight:700;
+    }
+    .aside-total .num{ font-size:20px; font-weight:800; }
+    .aside-total .per{ font-size:12.5px; color:var(--muted); font-weight:600; margin-left:6px; }
+    .aside-pay{
+      margin-top:12px;
+      width:100%;
+      border:1px solid rgba(90,42,106,.28);
+      background:var(--brand);
+      color:#fff;
+      border-radius:var(--btn-radius);
+      padding:12px 16px;
+      font-weight:600;
+      font-size:16px;
+      cursor:default;
+    }
+    .aside-note{
+      margin-top:10px;
+      font-size:13.5px;
+      color:var(--muted);
+      font-weight:600;
+    }
+
+    @media (max-width: 1100px){
+      .checkout{ grid-template-columns: 1fr; }
+      .kv-grid{ grid-template-columns: 1fr; }
+      .addon{ grid-template-columns: 1fr; align-items:start; }
+      .addon .p{ justify-self:start; }
+      .checkout-aside .aside-card{ position:static; }
+    }
+    @media (max-width: 640px){
+      .content{ padding:16px; }
+      .checkout-card{ padding:14px; }
+      .seg{ width:100%; }
+      .seg .opt{ flex:1; text-align:center; }
+      .checkout-head h2{ font-size:17px; }
+      .kv-row{ align-items:flex-start; gap:6px; }
+      .addon{ gap:6px; }
+      .addon .control, .addon select{ width:100%; }
+      .addon .p{ justify-self:end; }
+    }
+
+/* Backups content (kept from previous version) */
+.page-wrap{ max-width:1120px; width:100%; margin:0; }
+
+/* Keep the whole content area within a readable max width (prevents header buttons inside blocks from "running away") */
+.content .page-wrap{ max-width:1120px; }
+
+.table-wrap{
+  max-width:1120px;
+  width:100%;
+  overflow-x:auto;
+}
+
+.table th, .table td{
+  padding:10px 12px;
+  border-top:1px solid var(--line);
+  vertical-align:top;
+  font-size:13px;
+}
+.table{
+  width:100%;
+}
+.table col.col-vm{ min-width:120px; }
+.table col.col-actions{ width:230px; }
+.table col.col-date{ width:160px; }
+.table col.col-size{ width:90px; }
+.table col.col-created{ width:110px; }
+.table col.col-status{ width:120px; }
+.table th{
+  background:var(--shade);
+  color:#3b3d42;
+  font-weight:900;
+  font-size:12px;
+  letter-spacing:.02em;
+}
+.table tr:first-child td{ border-top:none; }
+.table .mono{ font-variant-numeric: tabular-nums; font-feature-settings:"tnum" 1; }
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:3px 10px;
+  border-radius:999px;
+  font-size:11.5px;
+  font-weight:900;
+  border:1px solid var(--line);
+  background:#fff;
+  white-space:nowrap;
+}
+.badge.ok{ color:#1a7f37; background:rgba(26,127,55,.06); border-color:rgba(26,127,55,.18); }
+.badge.work{ color:#8b6a14; background:#fff7ea; border-color:#f0dfc5; }
+.badge.err{ color:#b42318; background:rgba(180,35,24,.06); border-color:rgba(180,35,24,.18); }
+
+.col-actions{ width:230px; }
+
+.actions{
+  display:flex;
+  flex-direction:row;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap; /* allow wrap on narrow screens */
+}
+@media (min-width: 860px){
+  .actions{ flex-wrap:nowrap; } /* keep in one line on wide screens */
+}
+.actions-row{ display:none; }
+.actions-row td{
+  border-top:none;
+  padding-top:0;
+}
+
+.btn-sm{
+  border:1px solid rgba(85,44,86,.38);
+  background:#fff;
+  color:var(--brand);
+  border-radius:var(--btn-radius);
+  padding:7px 8px;
+  font-weight:800;
+  font-size:12px;
+  text-align:center;
+  user-select:none;
+  cursor:default;
+  white-space:nowrap;
+}
+.btn-sm.primary{
+  background:var(--brand);
+  color:#fff;
+  border-color:rgba(85,44,86,.28);
+}
+
+.toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.filters{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.select{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 10px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#fff;
+  font-weight:900;
+  font-size:12.5px;
+  color:var(--muted);
+  white-space:nowrap;
+  max-width:260px;
+}
+.select .v{
+  color:var(--brand-2);
+  max-width:160px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  display:inline-block;
+  vertical-align:bottom;
+}
+
+.hr-split{
+  margin:14px 0 0;
+  height:1px;
+  background:var(--line);
+}
+
+/* Mobile: keep content visible; table scroll + buttons wrap */
+@media (max-width: 980px){
+  .content{ padding:16px; }
+  .page-wrap{ margin:0; max-width:100%; }
+  .col-actions{ width:220px; }
+  .actions{ flex-wrap:wrap; }
+  .table col.col-actions{ width:220px; }
+  .table col.col-vm{ min-width:100px; }
+}
+
+.toolbar{ align-items:flex-start; }
+@media (max-width: 1100px){
+  .toolbar{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .filters{
+    width:100%;
+  }
+  .select{
+    flex:1 1 100%;
+    width:100%;
+    justify-content:space-between;
+  }
+  .select .v{
+    max-width:100%;
+  }
+  .actions{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .btn-sm{
+    width:100%;
+    text-align:center;
+  }
+}
+@media (max-width: 720px){
+  .table th.col-actions,
+  .table td.col-actions{ display:none; }
+  .actions-row{ display:table-row; }
+  .actions-row .actions{
+    flex-direction:row;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  .actions-row .btn-sm{
+    width:auto;
+  }
+}
+@media (max-width: 600px){
+  .table col.col-created{ display:none; }
+  .table th.col-created,
+  .table td.col-created{ display:none; }
+}
+
+
+
+.content-inner{max-width:1120px;margin:0;}
+</style>
+</head>
+<body>
+<!-- Mobile drawer -->
+<input id="navToggle" type="checkbox"/>
+<label aria-label="Закрыть меню" class="drawer-overlay" for="navToggle"></label>
+<nav aria-label="Главное меню" class="drawer">
+<div class="drawer-head">
+</div>
+<div class="nav">
+<div class="nav-title">Каталог</div>
+<a href="#">Выделенные серверы</a>
+<a href="#">Виртуальные серверы</a>
+<div class="nav-title" style="margin-top:10px;">Мои услуги</div>
+<a href="#">Мои услуги</a>
+<a class="active" href="#">Резервные копии</a>
+<a href="#">SSH-ключи <span class="tag">в разработке</span></a>
+<a href="#">API <span class="tag">в разработке</span></a>
+</div>
+</nav>
+<header class="topbar">
+<div class="logo">
+<img alt="FATMETAL" src="data:image/png;base64,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"/>
+</div>
+<div class="top-actions">
+<div class="dropdown">
+  <button class="nav-action" type="button">💰 460 ₽ ▾</button>
+  <div class="dropdown-menu">
+    <div class="muted-item">Баланс</div>
+    <a class="item" href="#">Пополнить баланс</a>
+    <a class="item" href="#">История операций</a>
+  </div>
+</div>
+<div class="dropdown">
+  <button class="nav-action" type="button">🔔 Уведомления ▾</button>
+  <div class="dropdown-menu">
+    <div class="muted-item">Последние</div>
+    <a class="item" href="#">У вас нет новых уведомлений</a>
+  </div>
+</div>
+<div class="dropdown">
+  <button class="nav-action" type="button">❔ Помощь ▾</button>
+  <div class="dropdown-menu">
+    <a class="item" href="#">База знаний</a>
+    <a class="item" href="#">Поддержка</a>
+    <a class="item" href="#">Статус сервиса</a>
+  </div>
+</div>
+<div class="dropdown">
+  <button class="nav-action" type="button"><span class="avatar"></span> prokopovich@gmail.com ▾</button>
+  <div class="dropdown-menu">
+    <a class="item" href="#">Профиль</a>
+    <a class="item" href="#">Настройки</a>
+    <a class="item" href="#">Выйти</a>
+  </div>
+</div>
+<label aria-label="Открыть меню" class="burger" for="navToggle"><span></span></label>
+</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="nav">
+<div class="nav-title">Каталог</div>
+<a href="#">Выделенные серверы</a>
+<a href="#">Виртуальные серверы</a>
+<div class="nav-title" style="margin-top:10px;">Мои услуги</div>
+<a href="#">Мои услуги</a>
+<a class="active" href="#">Резервные копии</a>
+<a href="#">SSH-ключи <span class="tag">в разработке</span></a>
+<a href="#">API <span class="tag">в разработке</span></a>
+</div>
+</aside>
+<main class="content">
+  <div class="content-inner">
+      <h1>Резервные копии</h1>
+
+      <div class="page-wrap">
+      <div class="block">
+        <div class="toolbar">
+          <div class="filters" aria-label="Сортировка и фильтры">
+            <div class="select">Сортировка: <span class="v">Сначала новые</span> ▾</div>
+            <div class="select">Статус: <span class="v">Все</span> ▾</div>
+            <div class="select">ВМ: <span class="v">Все</span> ▾</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div>
+            <h2 style="margin:0;">Регулярные копии</h2>
+            <div class="helper">Регулярные копии создаются автоматически по плану 1 раз в сутки (root volume)</div>
+          </div>
+          <div class="muted" style="font-weight:900;">Глубина хранения задаётся в настройках каждой ВМ</div>
+        </div>
+
+        <div class="table-wrap" style="margin-top:12px;">
+          <table class="table" aria-label="Таблица регулярных копий">
+            <colgroup>
+              <col class="col-date">
+              <col class="col-vm">
+              <col class="col-size">
+              <col class="col-created">
+              <col class="col-status">
+              <col class="col-actions">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Дата/время</th>
+                <th>ВМ</th>
+                <th>Size</th>
+                <th class="col-created">Создано</th>
+                <th>Статус</th>
+                <th class="col-actions">Действия с ВМ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">11.02.2026 03:12</td>
+                <td><b>WEB-SRV1</b></td>
+                <td class="mono">50 GB</td>
+                <td class="col-created">По плану</td>
+                <td><span class="badge ok">Готово</span></td>
+                <td class="col-actions">
+                  <div class="actions">
+                    <div class="btn-sm" onclick="openRestore()">Восстановить</div>
+                    <div class="btn-sm">Создать новую</div>
+                  </div>
+                </td>
+              </tr>
+              <tr class="actions-row">
+                <td colspan="6">
+                  <div class="actions">
+                    <div class="btn-sm" onclick="openRestore()">Восстановить</div>
+                    <div class="btn-sm">Создать новую</div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="mono">10.02.2026 03:11</td>
+                <td><b>DB-SRV1</b></td>
+                <td class="mono">120 GB</td>
+                <td class="col-created">По плану</td>
+                <td><span class="badge work">Создаётся</span></td>
+                <td class="col-actions">
+                  <div class="actions">
+                    <div class="btn-sm" onclick="openRestore()">Восстановить</div>
+                    <div class="btn-sm">Создать новую</div>
+                  </div>
+                </td>
+              </tr>
+              <tr class="actions-row">
+                <td colspan="6">
+                  <div class="actions">
+                    <div class="btn-sm" onclick="openRestore()">Восстановить</div>
+                    <div class="btn-sm">Создать новую</div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="mono">09.02.2026 03:09</td>
+                <td><b>VM-CUSTOM</b></td>
+                <td class="mono">80 GB</td>
+                <td class="col-created">По плану</td>
+                <td><span class="badge err">Ошибка</span></td>
+                <td class="col-actions">
+                  <div class="actions">
+                    <div class="btn-sm" onclick="openRestore()">Восстановить</div>
+                    <div class="btn-sm">Создать новую</div>
+                  </div>
+                </td>
+              </tr>
+              <tr class="actions-row">
+                <td colspan="6">
+                  <div class="actions">
+                    <div class="btn-sm" onclick="openRestore()">Восстановить</div>
+                    <div class="btn-sm">Создать новую</div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="hr-split"></div>
+
+        <div style="margin-top:14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div>
+            <h2 style="margin:0;">Разовые копии (платно)</h2>
+            <div class="helper">Создаются вручную в моменте (root volume)</div>
+          </div>
+          <div class="btn-sm primary" style="height:fit-content;">Создать разовую копию</div>
+        </div>
+
+        <div class="table-wrap" style="margin-top:12px;">
+          <table class="table" aria-label="Таблица разовых копий">
+            <colgroup>
+              <col class="col-date">
+              <col class="col-vm">
+              <col class="col-size">
+              <col class="col-created">
+              <col class="col-status">
+              <col class="col-actions">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Дата/время</th>
+                <th>ВМ</th>
+                <th>Size</th>
+                <th class="col-created">Создано</th>
+                <th>Статус</th>
+                <th class="col-actions">Действия с ВМ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">11.02.2026 18:44</td>
+                <td><b>WEB-SRV1</b></td>
+                <td class="mono">50 GB</td>
+                <td class="col-created">Вручную</td>
+                <td><span class="badge ok">Готово</span></td>
+                <td class="col-actions">
+                  <div class="actions">
+                    <div class="btn-sm" onclick="openRestore()">Восстановить</div>
+                    <div class="btn-sm">Создать новую</div>
+                  </div>
+                </td>
+              </tr>
+              <tr class="actions-row">
+                <td colspan="6">
+                  <div class="actions">
+                    <div class="btn-sm" onclick="openRestore()">Восстановить</div>
+                    <div class="btn-sm">Создать новую</div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="mono">08.02.2026 22:10</td>
+                <td><b>VM-CUSTOM</b></td>
+                <td class="mono">80 GB</td>
+                <td class="col-created">Вручную</td>
+                <td><span class="badge ok">Готово</span></td>
+                <td class="col-actions">
+                  <div class="actions">
+                    <div class="btn-sm" onclick="openRestore()">Восстановить</div>
+                    <div class="btn-sm">Создать новую</div>
+                  </div>
+                </td>
+              </tr>
+              <tr class="actions-row">
+                <td colspan="6">
+                  <div class="actions">
+                    <div class="btn-sm" onclick="openRestore()">Восстановить</div>
+                    <div class="btn-sm">Создать новую</div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      </div>
+      </div>
+</main>
+</div>
+
+<!-- Restore Modal (visible by default for demo) -->
+<div class="modal-overlay" id="restoreModal" style="display:flex;">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Восстановить виртуальную машину</div>
+    </div>
+
+    <div class="modal-body">
+      <div class="kv">
+        <div class="kv-row">
+          <div class="k">Виртуальная машина</div>
+          <div class="v"><b>WEB-SRV1</b></div>
+        </div>
+        <div class="kv-row">
+          <div class="k">Дата копии</div>
+          <div class="v mono">11.02.2026 03:12</div>
+        </div>
+        <div class="kv-row">
+          <div class="k">Размер</div>
+          <div class="v mono">50 GB</div>
+        </div>
+      </div>
+
+      <div class="alert">
+        <div>Все изменения на системном диске после этой даты будут потеряны.</div>
+        <div>Для восстановления потребуется остановка виртуальной машины.</div>
+      </div>
+
+      <label class="confirm">
+        <input type="checkbox" id="restoreConfirm">
+        <span>Я понимаю последствия восстановления</span>
+      </label>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeRestore()">Отмена</button>
+      <button class="btn-sm primary" id="restoreBtn" disabled>
+        Остановить и восстановить
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.35);
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+.modal{
+  width:520px;
+  max-width:calc(100% - 24px);
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:0 24px 48px rgba(0,0,0,.18);
+  padding:18px;
+}
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
+.modal-title{
+  font-size:18px;
+  font-weight:700;
+  color:var(--brand-2);
+}
+.modal-close{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:8px;
+  width:34px;
+  height:34px;
+  font-weight:700;
+  cursor:pointer;
+}
+.modal-body .kv-row{
+  display:flex;
+  justify-content:space-between;
+  padding:6px 0;
+  border-bottom:1px dashed var(--line);
+}
+.modal-body .kv-row:last-child{
+  border-bottom:none;
+}
+.alert{
+  margin:14px 0;
+  padding:12px;
+  border-radius:12px;
+  background:#fff7ea;
+  border:1px solid #f0dfc5;
+  font-size:13px;
+  font-weight:600;
+  color:#8b6a14;
+}
+.confirm{
+  display:flex;
+  gap:8px;
+  align-items:flex-start;
+  font-weight:600;
+  font-size:13px;
+}
+.modal-footer{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:18px;
+}
+</style>
+
+<script>
+function openRestore(){
+  document.getElementById('restoreModal').style.display='flex';
+}
+function closeRestore(){
+  document.getElementById('restoreModal').style.display='none';
+}
+document.addEventListener("DOMContentLoaded", function(){
+  var cb = document.getElementById('restoreConfirm');
+  if(cb){
+    cb.addEventListener('change', function(){
+      document.getElementById('restoreBtn').disabled = !this.checked;
+    });
+  }
+});
+</script>
+
+</body>
