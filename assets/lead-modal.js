@@ -69,9 +69,9 @@
       "Страница: " + payload.page,
       "Источник кнопки: " + (payload.source || "unknown"),
       "Имя: " + payload.name,
-      "Компания: " + (payload.company || "—"),
+      "Компания: " + (payload.company || "-"),
       "Контакт: " + payload.contact,
-      "Комментарий: " + (payload.note || "—"),
+      "Комментарий: " + (payload.note || "-"),
       "Время: " + payload.timestamp
     ].join("\n");
   }
