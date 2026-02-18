@@ -619,6 +619,9 @@
 .meta-item{padding: 10px 12px; border-radius: 14px; background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.06);}
 .meta-item .k{display:block; font-size: 12px; opacity:.7;}
 .meta-item .v{display:block; font-weight: 650;}
+.meta-item.result-group{min-width: 320px;}
+.meta-pills{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;}
+.result-pill{display:inline-flex; align-items:center; padding:6px 10px; border-radius:999px; border:1px solid rgba(0,0,0,0.09); background:rgba(255,255,255,.75); font-size:12px; font-weight:650; line-height:1.2;}
 .hero-inner{display:grid; grid-template-columns: 1.2fr .8fr; gap: 28px; align-items: start;}
 .hero-card{padding: 18px 18px; border-radius: 18px; background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.06);}
 .hero-card-title{font-weight: 700; margin-bottom: 10px;}
@@ -1110,7 +1113,15 @@ p{color: var(--muted);}
           <div class="meta-row">
             <div class="meta-item"><span class="k">Доступ</span><span class="v">Read-only</span></div>
             <div class="meta-item"><span class="k">Агенты</span><span class="v">Не требуются</span></div>
-            <div class="meta-item"><span class="k">Результат</span><span class="v">Карта + топ‑риски + отчёты + уведомления изменений</span></div>
+            <div class="meta-item result-group">
+              <span class="k">Результат</span>
+              <div class="meta-pills" aria-label="Результаты">
+                <span class="result-pill">Карта</span>
+                <span class="result-pill">Топ‑риски</span>
+                <span class="result-pill">Отчёты</span>
+                <span class="result-pill">Уведомления изменений</span>
+              </div>
+            </div>
           </div>
         </div>
         <div class="hero-art">
@@ -1173,17 +1184,17 @@ p{color: var(--muted);}
         <div class="card">
           <h3>Критерии</h3>
           <ul class="list">
-            <li><b>Достижимость:</b> существует ли реальный разрешённый путь до цели (а не просто «подозрительное правило»).</li>
-            <li><b>Последствия:</b> масштаб последствий (зона влияния) и влияние на критичные сервисы/данные.</li>
-            <li><b>Исправляемость:</b> насколько быстро и безопасно закрывается (узкий фикс vs. большой рефакторинг).</li>
-            <li><b>Ответственность:</b> кому адресовать действие (команда/владелец/подрядчик) — чтобы риск не «повисал».</li>
+            <li><b>Достижимость:</b> существует ли реальный разрешённый путь до цели (а не просто «подозрительное правило»)</li>
+            <li><b>Последствия:</b> масштаб последствий (зона влияния) и влияние на критичные сервисы/данные</li>
+            <li><b>Исправляемость:</b> насколько быстро и безопасно закрывается (узкий фикс vs. большой рефакторинг)</li>
+            <li><b>Ответственность:</b> кому адресовать действие (команда/владелец/подрядчик) — чтобы риск не «повисал»</li>
           </ul>
         </div>
         <div class="card">
           <h3>Объяснимость</h3>
           <p>Каждая находка должна быть «рассказуемой» через модель связности: источник пути, промежуточные узлы, правила и границы сегментов. Это снижает споры между ИТ и ИБ и ускоряет фиксы</p>
           <div class="note">
-            <b>Фокус:</b> только практическая эксплуатируемость и последствия. Нерелевантный шум отсекается.
+            <b>Фокус:</b> только практическая эксплуатируемость и последствия. Нерелевантный шум отсекается
           </div>
         </div>
       </div>
@@ -1227,19 +1238,19 @@ p{color: var(--muted);}
         <div class="card">
           <h3>Данные</h3>
           <ul class="list">
-            <li><b>Инвентарь ресурсов:</b> VM/инстансы, сети/подсети, балансировщики, NAT/шлюзы, публичные адреса.</li>
-            <li><b>Сетевые политики:</b> security groups / firewall rules / ACL, вход/выход, Any‑Any, опасные порты, исключения.</li>
-            <li><b>Топология и маршруты:</b> attachments, route tables, peering/VPN/tunnels (где применимо).</li>
-            <li><b>Контекст:</b> теги/проекты, окружения, владельцы/команды, критичность сервисов.</li>
+            <li><b>Инвентарь ресурсов:</b> VM/инстансы, сети/подсети, балансировщики, NAT/шлюзы, публичные адреса</li>
+            <li><b>Сетевые политики:</b> security groups / firewall rules / ACL, вход/выход, Any‑Any, опасные порты, исключения</li>
+            <li><b>Топология и маршруты:</b> attachments, route tables, peering/VPN/tunnels (где применимо)</li>
+            <li><b>Контекст:</b> теги/проекты, окружения, владельцы/команды, критичность сервисов</li>
           </ul>
         </div>
         <div class="card">
           <h3>Вопросы, на которые отвечаем</h3>
           <ul class="list">
-            <li><b>Внешняя поверхность:</b> что реально доступно из интернета и почему.</li>
-            <li><b>Пути внутри:</b> возможны ли латеральные перемещения между сегментами/сервисами.</li>
-            <li><b>Межоблачная связность:</b> как связаны ресурсы в разных облаках/средах в одной картине.</li>
-            <li><b>Изменения:</b> какие новые входы/пути появились после изменений.</li>
+            <li><b>Внешняя поверхность:</b> что реально доступно из интернета и почему</li>
+            <li><b>Пути внутри:</b> возможны ли латеральные перемещения между сегментами/сервисами</li>
+            <li><b>Межоблачная связность:</b> как связаны ресурсы в разных облаках/средах в одной картине</li>
+            <li><b>Изменения:</b> какие новые входы/пути появились после изменений</li>
           </ul>
         </div>
       </div>
