@@ -883,6 +883,40 @@ p{color: var(--muted);}
   margin: 0 0 8px;
 }
 
+/* Keep first-screen rhythm aligned with other pages */
+main.wrap > .hero:first-of-type{
+  padding: clamp(36px, 5vw, 64px) 0 22px;
+}
+main.wrap > .hero:first-of-type .kicker-logo{
+  height: 26px;
+}
+main.wrap > .hero:first-of-type h1{
+  font-size: var(--step-4);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  text-align: center;
+}
+
+/* Global rhythm normalization across pages */
+main.wrap{
+  padding-bottom: 56px;
+}
+main.wrap > .section{
+  padding: clamp(24px, 3vw, 34px) 0;
+}
+.section-title{
+  margin: 0 0 10px;
+  font-size: var(--step-2);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.center-title{
+  margin: 0 0 14px;
+  font-size: var(--step-2);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
 </style>
 </head>
 <body>

@@ -98,6 +98,12 @@
       background: rgba(11,18,32,.06);
       border-color: rgba(11,18,32,.06);
     }
+    .menu .active{
+      background: rgba(31,183,159,.10);
+      color: rgba(11,18,32,.92);
+      border-color: rgba(31,183,159,.20);
+      font-weight: 700;
+    }
     .menu .pill{
       padding: 8px 12px;
       border-radius: 999px;
@@ -346,6 +352,26 @@
       max-width: 100%;
       object-fit: contain;
     }
+
+    /* Global rhythm normalization across pages */
+    main.wrap{
+      padding-bottom: 56px;
+    }
+    main.wrap > .section{
+      padding: clamp(24px, 3vw, 34px) 0;
+    }
+    .section-title{
+      margin: 0 0 10px;
+      font-size: var(--step-2);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .center-title{
+      margin: 0 0 14px;
+      font-size: var(--step-2);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
   </style>
 </head>
 <body>
@@ -360,7 +386,7 @@
         <a href="/sites/">Главная</a>
         <a href="/sites/product.html">Продукт</a>
         <a href="/sites/faq.html">FAQ</a>
-        <a href="/sites/partners.html" style="background: rgba(31,183,159,.10); color: rgba(11,18,32,.92); border-color: rgba(31,183,159,.20); font-weight: 700;">Партнёрам</a>
+        <a class="active" href="/sites/partners.html">Партнёрам</a>
         <a href="#contacts">Контакты</a>
         <a class="pill" href="/sites/login">Войти</a>
         <a class="cta" href="mailto:info@oasisdefender.ru?subject=Oasis%20Defender%20—%20демо">Написать</a>
