@@ -79,19 +79,27 @@
     .nav-inner {
       display:flex; align-items:center; justify-content:space-between;
       gap: 14px; padding: 12px 0;
+      min-height: 60px;
     }
     .brand { display:flex; align-items:center; gap: 12px; }
     .logo { height: 36px; width: auto; display:block; }
     .menu {
       display:flex; align-items:center; gap: 8px;
-      flex-wrap: wrap; justify-content:flex-end;
-      font-size: var(--step--1);
+      flex-wrap: nowrap; justify-content:flex-end;
+      font-size: 14px;
+      line-height: 1;
       color: rgba(11,18,32,.78);
     }
     .menu a {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
       padding: 8px 10px; border-radius: 12px;
       border: 1px solid transparent;
       font-weight: 600;
+    }
+    @media (max-width: 1100px){
+      .menu{ flex-wrap: wrap; }
     }
     .menu a:hover {
       background: rgba(11,18,32,.06);
