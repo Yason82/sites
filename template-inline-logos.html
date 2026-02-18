@@ -565,6 +565,51 @@
       border-color: rgba(31,183,159,.22);
     }
 
+    /* Gentle v2 refinement (accepted preview baseline) */
+    body{
+      background:
+        radial-gradient(880px 500px at 14% -10%, rgba(31,183,159,.16), transparent 60%),
+        radial-gradient(920px 520px at 86% -12%, rgba(138,230,218,.14), transparent 62%),
+        var(--bg);
+    }
+
+    .cloud-strip,
+    .feature-box,
+    .soft-surface,
+    .final-block,
+    .platforms-block{
+      border-color: rgba(11,18,32,.07);
+      box-shadow: 0 10px 24px rgba(11,18,32,.05);
+    }
+
+    .card,
+    .plain-item,
+    .final-item{
+      border-color: rgba(11,18,32,.07);
+      background: rgba(255,255,255,.88);
+      box-shadow: none;
+      transition: border-color .2s ease, background .2s ease, transform .2s ease;
+    }
+    .card:hover,
+    .plain-item:hover,
+    .final-item:hover{
+      transform: translateY(-1px);
+      border-color: rgba(31,183,159,.2);
+      background: rgba(255,255,255,.95);
+    }
+
+    .center-title{
+      margin-bottom: 12px;
+      letter-spacing: -0.015em;
+    }
+    .platforms{
+      gap: 12px;
+    }
+    .platform{
+      border-radius: 14px;
+      padding: 9px 12px;
+    }
+
     /* Hero alignment guard: keep logo/title/subtitle stable across page switches */
     main.wrap > .hero:first-of-type{
       padding: clamp(36px, 5vw, 64px) 0 22px;
