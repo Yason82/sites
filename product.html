@@ -633,7 +633,7 @@
 .meta-item{padding: 10px 12px; border-radius: 14px; background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.06);}
 .meta-item .k{display:block; font-size: 12px; opacity:.7;}
 .meta-item .v{display:block; font-weight: 650;}
-.meta-item.result-group{min-width: 320px;}
+.meta-item.result-group{min-width: 320px; flex: 1 1 100%;}
 .meta-pills{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;}
 .result-pill{
   display:inline-flex;
@@ -1199,9 +1199,14 @@ main.wrap > .section{
               </div>
             </div>
             <div class="meta-item">
-              <span class="k">Доступ и агенты</span>
-              <div class="meta-pills" aria-label="Доступ и агенты">
+              <span class="k">Доступ</span>
+              <div class="meta-pills" aria-label="Доступ">
                 <span class="result-pill">Read-only</span>
+              </div>
+            </div>
+            <div class="meta-item">
+              <span class="k">Агенты</span>
+              <div class="meta-pills" aria-label="Агенты">
                 <span class="result-pill">Не требуются</span>
               </div>
             </div>
