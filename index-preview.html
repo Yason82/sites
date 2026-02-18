@@ -1,0 +1,1118 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Oasis Defender — контроль рисков облака</title>
+  <meta name="description" content="Единая карта мультиоблачной инфраструктуры и рисков. Объединяем инфраструктуру разных облаков и частных сред в одном окне. Вы видите реальную связность между системами и приоритетные риски" />
+  <meta name="theme-color" content="#1fb79f" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =========================================
+       Typography-first, enterprise-clean layout
+       Text content is unchanged. Only design.
+       ========================================= */
+
+    :root {
+      --bg: #f5fbf8;
+      --surface: rgba(255,255,255,.78);
+      --card: rgba(255,255,255,.92);
+      --text: #0b1220;
+      --muted: rgba(11,18,32,.70);
+      --muted2: rgba(11,18,32,.56);
+      --border: rgba(11,18,32,.10);
+      --border2: rgba(11,18,32,.08);
+      --shadow: 0 22px 70px rgba(11,18,32,.10);
+      --shadow2: 0 12px 34px rgba(11,18,32,.08);
+      --radius: 18px;
+      --radius2: 24px;
+
+      --accent: #1fb79f;
+      --accent2: #35c7b2;
+      --accent3: #8ae6da;
+
+      --max: 1120px;
+      --content: 920px;
+
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+      --step--1: clamp(0.82rem, 0.80rem + 0.10vw, 0.88rem);
+      --step-0:  clamp(0.95rem, 0.92rem + 0.20vw, 1.05rem);
+      --step-1:  clamp(1.08rem, 1.02rem + 0.40vw, 1.25rem);
+      --step-2:  clamp(1.28rem, 1.15rem + 0.70vw, 1.65rem);
+      --step-3:  clamp(1.55rem, 1.32rem + 1.10vw, 2.15rem);
+      --step-4:  clamp(2.05rem, 1.65rem + 1.80vw, 3.00rem);
+
+      --lh-tight: 1.12;
+      --lh: 1.62;
+      --lh-loose: 1.72;
+      --ls-tight: -0.02em;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(950px 560px at 14% -10%, rgba(31,183,159,.22), transparent 58%),
+        radial-gradient(950px 560px at 86% -10%, rgba(138,230,218,.18), transparent 58%),
+        radial-gradient(1100px 700px at 50% 120%, rgba(31,183,159,.10), transparent 62%),
+        var(--bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+    .content { max-width: var(--content); margin: 0 auto; }
+
+    /* Nav */
+    .nav {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(245,251,248,.84);
+      backdrop-filter: saturate(170%) blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display:flex; align-items:center; justify-content:space-between;
+      gap: 14px; padding: 12px 0;
+      min-height: 60px;
+    }
+    .brand { display:flex; align-items:center; gap: 12px; }
+    .logo { height: 36px; width: auto; display:block; }
+    .menu {
+      display:flex; align-items:center; gap: 8px;
+      flex-wrap: nowrap; justify-content:flex-end;
+      font-size: 14px;
+      line-height: 1;
+      color: rgba(11,18,32,.78);
+    }
+    .menu a {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      padding: 8px 10px; border-radius: 12px;
+      border: 1px solid transparent;
+      font-weight: 600;
+    }
+    @media (max-width: 1100px){
+      .menu{ flex-wrap: wrap; }
+    }
+    .menu a:hover {
+      background: rgba(11,18,32,.06);
+      border-color: rgba(11,18,32,.06);
+    }
+    .menu .active{
+      background: rgba(31,183,159,.10);
+      color: rgba(11,18,32,.92);
+      border-color: rgba(31,183,159,.20);
+      font-weight: 600;
+    }
+    .menu .pill{
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(31,183,159,.30);
+      background: rgba(31,183,159,.10);
+      color: rgba(11,18,32,.86);
+      font-weight: 700;
+    }
+    .menu .cta {
+      padding: 9px 12px; border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; font-weight: 700;
+      border: 1px solid rgba(31,183,159,.35);
+      box-shadow: 0 14px 28px rgba(31,183,159,.18);
+    }
+
+    /* Hero */
+    .hero {
+      padding: clamp(36px, 5vw, 64px) 0 22px;
+    }
+    .kicker {
+      display:flex; gap: 10px; align-items:center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      max-width: var(--content);
+      font-size: var(--step--1);
+      color: rgba(11,18,32,.66);
+    }
+    .kicker-logo{
+      height: 26px;
+      width: auto;
+      display: block;
+    }
+    .kdot {
+      width: 8px; height: 8px; border-radius: 999px;
+      background: rgba(31,183,159,.85);
+      box-shadow: 0 0 0 5px rgba(31,183,159,.14);
+    }
+    h1 {
+      margin: 0;
+      font-size: var(--step-4);
+      line-height: var(--lh-tight);
+      letter-spacing: var(--ls-tight);
+      text-align: center;
+    }
+    .sub {
+      margin: 12px auto 0;
+      max-width: var(--content);
+      text-align: center;
+      font-size: var(--step-1);
+      line-height: var(--lh-loose);
+      color: var(--muted);
+    }
+
+    /* Cloud strip (treated as a “proof bar”) */
+    .cloud-strip {
+      margin: 22px auto 0;
+      max-width: var(--content);
+      background: linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.70));
+      border: 1px solid var(--border2);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow2);
+      padding: 14px 14px 12px;
+    }
+    .cloud-row {
+      display: flex; flex-wrap: wrap;
+      gap: 10px 10px; align-items: center; justify-content: center;
+      font-size: var(--step--1);
+      color: rgba(11,18,32,.74);
+    }
+    .cloud-label {
+      font-weight: 750;
+      letter-spacing: -0.01em;
+      color: rgba(11,18,32,.72);
+    }
+    .chip {
+      display:inline-flex; align-items:center; gap: 8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(31,183,159,.26);
+      background: rgba(31,183,159,.09);
+      color: rgba(11,18,32,.80);
+      white-space: nowrap;
+    }
+    .chip .dot {
+      width: 8px; height: 8px; border-radius: 999px;
+      background: rgba(31,183,159,.78);
+      box-shadow: 0 0 0 4px rgba(31,183,159,.12);
+    }
+
+    .hero-actions {
+      margin-top: 14px;
+      display:flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    }
+    .btn {
+      display:inline-flex; align-items:center; justify-content:center;
+      padding: 10px 14px; border-radius: 999px;
+      border: 1px solid rgba(11,18,32,.12);
+      background: rgba(255,255,255,.86);
+      color: rgba(11,18,32,.86);
+      font-weight: 700;
+      font-size: var(--step--1);
+    }
+    .btn.primary {
+      border-color: rgba(31,183,159,.35);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(31,183,159,.18);
+    }
+
+    /* Sections */
+    .section {
+      padding: clamp(20px, 2.5vw, 30px) 0;
+    }
+
+    /* Feature grid: tuned line-length and equal density */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .feature-box{
+      border: 1px solid var(--border2);
+      border-radius: var(--radius2);
+      padding: 16px;
+      background: rgba(255,255,255,.70);
+      box-shadow: var(--shadow2);
+    }
+    .feature-note{
+      margin-top: 12px;
+      font-size: var(--step--1);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.86));
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      padding: 18px 18px;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: var(--step-0);
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+    }
+    .card p {
+      margin: 0;
+      font-size: var(--step--1);
+      line-height: var(--lh);
+      color: var(--muted);
+    }
+
+    .feature { grid-column: span 6; }
+    @media (max-width: 980px) {
+      .feature { grid-column: span 12; }
+    }
+
+    /* Two scenario panels */
+    .panel { grid-column: span 6; }
+    @media (max-width: 980px) {
+      .panel { grid-column: span 12; }
+    }
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: var(--step-0);
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+    }
+    .panel p {
+      margin: 0 0 10px;
+      font-size: var(--step--1);
+      line-height: var(--lh);
+      color: var(--muted);
+    }
+    .panel .bullets {
+      margin: 10px 0 12px;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: var(--step--1);
+      line-height: var(--lh);
+    }
+    .panel .bullets li { margin: 6px 0; }
+    .panel .leadline {
+      margin-top: 12px;
+      font-size: var(--step--1);
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: rgba(11,18,32,.84);
+    }
+    .panel .subbullets {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: var(--step--1);
+      line-height: var(--lh);
+    }
+
+    /* “Kому полезно” and “Result” blocks: clearer typographic hierarchy */
+    .center-title {
+      text-align: center;
+      margin: 0 0 12px;
+      font-size: var(--step-1);
+      letter-spacing: -0.01em;
+      font-weight: 850;
+    }
+    .soft-surface {
+      background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.62));
+      border: 1px solid var(--border2);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow2);
+      padding: 18px;
+    }
+
+    .plain-grid {
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .plain-item { grid-column: span 6; padding: 8px 6px; }
+    @media (max-width: 980px) {
+      .plain-item { grid-column: span 12; }
+    }
+    .plain-item h3 {
+      margin: 0 0 6px;
+      font-size: var(--step-0);
+      line-height: 1.25;
+    }
+    .plain-item p {
+      margin: 0;
+      font-size: var(--step--1);
+      line-height: var(--lh);
+      color: var(--muted);
+    }
+
+    .result-grid {
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .result-item { grid-column: span 6; }
+    @media (max-width: 980px) {
+      .result-item { grid-column: span 12; }
+    }
+    .result-item b {
+      display:block;
+      font-size: var(--step-0);
+      line-height: 1.25;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+    .result-item p {
+      margin: 0;
+      font-size: var(--step--1);
+      line-height: var(--lh);
+      color: var(--muted);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 30px;
+      border-top: 1px solid var(--border);
+      background: rgba(255,255,255,.56);
+    }
+    .footer-inner {
+      display:flex; gap: 18px; justify-content: space-between; flex-wrap: wrap;
+      padding: 18px 0;
+      font-size: var(--step--1);
+      color: rgba(11,18,32,.72);
+      align-items: flex-start;
+    }
+    .footer-meta{
+      display:flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .footer-email{
+      font-weight: 700;
+    }
+    .footer-links{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, max-content));
+      gap: 6px 16px;
+      align-items: start;
+      justify-content: end;
+    }
+    .footer-logo{
+      height: 28px;
+      width: auto;
+      display:block;
+      margin-bottom: 8px;
+    }
+    .footer strong { color: rgba(11,18,32,.86); }
+    .footer .links { display:flex; gap: 10px; flex-wrap: wrap; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* Small nice touch: focus rings */
+    :focus-visible {
+      outline: 3px solid rgba(31,183,159,.28);
+      outline-offset: 2px;
+      border-radius: 12px;
+    }
+  
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size: var(--step--1);
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      border: 1px solid rgba(31,183,159,.24);
+      background: rgba(31,183,159,.10);
+      color: rgba(11,18,32,.78);
+      white-space: nowrap;
+    }
+    .badge.startup{
+      border-color: rgba(14,165,233,.26);
+      background: rgba(14,165,233,.10);
+    }
+    .panel-head{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin: 0 0 10px;
+      flex-wrap: nowrap;
+    }
+    .panel-head h2{
+      margin:0;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+  
+    .badge.enterprise{
+      border-color: rgba(99,102,241,.26);
+      background: rgba(99,102,241,.10);
+    }
+
+  
+    /* Final blocks */
+    .final-block{
+      background: linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.66));
+      border: 1px solid var(--border2);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow2);
+      padding: 20px 18px;
+      overflow: hidden;
+      position: relative;
+    }
+    .final-block:before{
+      content:"";
+      position:absolute;
+      inset:-120px -220px auto auto;
+      width: 420px;
+      height: 420px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, rgba(31,183,159,.18), rgba(31,183,159,0) 62%);
+      pointer-events:none;
+    }
+    .final-head{
+      text-align:center;
+      max-width: var(--content);
+      margin: 0 auto;
+    }
+    .final-head h2{
+      margin: 0;
+      font-size: var(--step-2);
+      line-height: 1.18;
+      letter-spacing: -0.01em;
+      font-weight: 900;
+    }
+    .final-head p{
+      margin: 10px auto 0;
+      max-width: 900px;
+      font-size: var(--step-0);
+      line-height: var(--lh);
+      color: var(--muted);
+    }
+    .final-list{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .final-item{
+      grid-column: span 6;
+      background: rgba(255,255,255,.82);
+      border: 1px solid rgba(11,18,32,.08);
+      border-radius: var(--radius);
+      padding: 14px 14px;
+      box-shadow: 0 10px 24px rgba(11,18,32,.06);
+    }
+    @media (max-width: 980px){
+      .final-item{ grid-column: span 12; }
+    }
+    .final-item b{
+      display:block;
+      font-size: var(--step-0);
+      line-height: 1.25;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+    .final-item p{
+      margin:0;
+      font-size: var(--step--1);
+      line-height: var(--lh);
+      color: var(--muted);
+    }
+    .final-cta{
+      margin-top: 16px;
+      display:flex;
+      justify-content:center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .platforms-block{
+      margin-top: 14px;
+      background: rgba(255,255,255,.62);
+      border: 1px solid rgba(11,18,32,.08);
+      border-radius: var(--radius2);
+      padding: 18px 16px;
+      box-shadow: 0 10px 24px rgba(11,18,32,.05);
+    }
+    .platforms-block h2{
+      margin: 0;
+      text-align:center;
+      font-size: var(--step-2);
+      line-height: 1.18;
+      letter-spacing: -0.01em;
+      font-weight: 900;
+    }
+    .platforms-block p{
+      margin: 10px auto 0;
+      max-width: 860px;
+      text-align:center;
+      font-size: var(--step-0);
+      line-height: var(--lh);
+      color: var(--muted);
+    }
+    .platforms{
+      margin-top: 14px;
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .platform{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(11,18,32,.10);
+      background: rgba(255,255,255,.82);
+      box-shadow: 0 8px 18px rgba(11,18,32,.06);
+    }
+    .platform img{
+      height: 20px;
+      width: auto;
+      display:block;
+    }
+    .platform span{
+      font-size: var(--step--1);
+      color: rgba(11,18,32,.74);
+      font-weight: 650;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+    .platform.no-logo{
+      background: rgba(31,183,159,.08);
+      border-color: rgba(31,183,159,.22);
+    }
+
+    /* Global rhythm normalization across pages */
+    main.wrap{
+      padding-bottom: 56px;
+    }
+    main.wrap > .section{
+      padding: clamp(24px, 3vw, 34px) 0;
+    }
+    .section-title{
+      margin: 0 0 10px;
+      font-size: var(--step-2);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .center-title{
+      margin: 0 0 14px;
+      font-size: var(--step-2);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+
+    /* ===========================
+       Preview design refresh v1
+       =========================== */
+    :root{
+      --bg: #f8fcfa;
+      --bg-soft: #edf7f3;
+      --surface: rgba(255,255,255,.9);
+      --text: #0b1f1a;
+      --muted: rgba(11,31,26,.68);
+      --muted2: rgba(11,31,26,.56);
+      --border: rgba(19,62,49,.12);
+      --border2: rgba(19,62,49,.08);
+      --shadow: 0 18px 50px rgba(9,43,32,.08);
+      --shadow2: 0 10px 28px rgba(9,43,32,.06);
+      --radius: 20px;
+      --radius2: 28px;
+      --accent: #1e9f81;
+      --accent2: #34b89b;
+      --accent3: #8bdccc;
+      --font: "Geologica", "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    body{
+      color: var(--text);
+      background:
+        radial-gradient(900px 520px at 12% -8%, rgba(30,159,129,.16), transparent 64%),
+        radial-gradient(920px 540px at 92% -12%, rgba(139,220,204,.2), transparent 62%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+    }
+
+    .wrap{
+      max-width: 1160px;
+      padding: 0 24px;
+    }
+    .content{
+      max-width: 900px;
+    }
+
+    .nav{
+      background: rgba(248,252,250,.74);
+      border-bottom: 1px solid var(--border2);
+      backdrop-filter: saturate(180%) blur(14px);
+    }
+    .nav-inner{
+      min-height: 68px;
+      gap: 16px;
+    }
+    .logo{
+      height: 34px;
+    }
+    .menu{
+      gap: 6px;
+      font-size: 13px;
+      letter-spacing: .01em;
+    }
+    .menu a{
+      padding: 9px 11px;
+      border-radius: 11px;
+      border-color: transparent;
+    }
+    .menu a:hover{
+      background: rgba(19,62,49,.06);
+      border-color: rgba(19,62,49,.08);
+    }
+    .menu .active{
+      background: rgba(30,159,129,.12);
+      border-color: rgba(30,159,129,.2);
+      color: rgba(11,31,26,.95);
+    }
+    .menu .pill{
+      background: rgba(30,159,129,.1);
+      border-color: rgba(30,159,129,.28);
+    }
+    .menu .cta{
+      box-shadow: none;
+      background: linear-gradient(145deg, var(--accent), var(--accent2));
+    }
+
+    .hero{
+      padding: clamp(40px, 6vw, 74px) 0 26px;
+    }
+    .kicker-logo{
+      height: 28px;
+    }
+    h1{
+      font-size: clamp(2.2rem, 4.2vw, 3.6rem);
+      letter-spacing: -.03em;
+      line-height: 1.04;
+      max-width: 15ch;
+      margin: 0 auto;
+    }
+    .sub{
+      margin-top: 16px;
+      max-width: 70ch;
+      font-size: clamp(1.03rem, 1.6vw, 1.22rem);
+      line-height: 1.68;
+      color: var(--muted);
+    }
+
+    .cloud-strip{
+      margin-top: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.78));
+      border: 1px solid var(--border2);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow2);
+      padding: 16px;
+    }
+    .cloud-row{
+      gap: 10px 8px;
+      justify-content: flex-start;
+    }
+    .cloud-label{
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(11,31,26,.06);
+      border: 1px solid rgba(11,31,26,.08);
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .chip{
+      border-color: rgba(30,159,129,.28);
+      background: rgba(30,159,129,.09);
+      color: rgba(11,31,26,.84);
+    }
+    .hero-actions{
+      margin-top: 18px;
+      justify-content: flex-start;
+    }
+    .btn{
+      border-color: rgba(11,31,26,.14);
+      background: rgba(255,255,255,.95);
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(30,159,129,.3);
+      background: #fff;
+    }
+    .btn.primary{
+      box-shadow: none;
+    }
+
+    main.wrap > .section{
+      padding: clamp(30px, 4vw, 44px) 0;
+    }
+    .feature-box,
+    .soft-surface,
+    .final-block,
+    .platforms-block{
+      border-radius: calc(var(--radius2) + 2px);
+      border: 1px solid var(--border2);
+      background: linear-gradient(180deg, rgba(255,255,255,.93), rgba(255,255,255,.8));
+      box-shadow: var(--shadow2);
+    }
+    .feature-box,
+    .soft-surface,
+    .final-block{
+      padding: 18px;
+    }
+    .grid,
+    .plain-grid,
+    .final-list{
+      gap: 12px;
+    }
+
+    .card,
+    .plain-item,
+    .final-item{
+      border-radius: 18px;
+      border: 1px solid var(--border2);
+      background: rgba(255,255,255,.92);
+      box-shadow: none;
+      transition: transform .22s ease, border-color .22s ease, background .22s ease;
+    }
+    .card:hover,
+    .plain-item:hover,
+    .final-item:hover{
+      transform: translateY(-2px);
+      border-color: rgba(30,159,129,.25);
+      background: #fff;
+    }
+    .card h3,
+    .plain-item h3,
+    .final-item b{
+      letter-spacing: -.015em;
+      color: rgba(11,31,26,.96);
+    }
+    .card p,
+    .plain-item p,
+    .final-item p{
+      color: var(--muted);
+      max-width: 66ch;
+    }
+    .feature-note{
+      margin-top: 14px;
+      color: var(--muted2);
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: .02em;
+    }
+
+    h2,
+    .center-title{
+      font-size: clamp(1.5rem, 2.2vw, 2.1rem);
+      letter-spacing: -.022em;
+      line-height: 1.14;
+      color: rgba(11,31,26,.98);
+    }
+    .panel h2{
+      font-size: clamp(1.16rem, 1.7vw, 1.36rem);
+      line-height: 1.22;
+      letter-spacing: -.018em;
+    }
+
+    .badge{
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      border-radius: 999px;
+    }
+
+    .platforms-block{
+      margin-top: 18px;
+      padding: 20px 18px;
+    }
+    .platforms{
+      margin-top: 16px;
+      gap: 12px;
+    }
+    .platform{
+      min-width: 58px;
+      justify-content: center;
+      border-radius: 14px;
+      border: 1px solid var(--border2);
+      background: rgba(255,255,255,.96);
+      padding: 9px 10px;
+      box-shadow: none;
+    }
+    .platform img{
+      height: 18px;
+    }
+
+    .footer{
+      margin-top: 40px;
+      border-top: 1px solid var(--border2);
+      background: rgba(255,255,255,.56);
+    }
+    .footer-inner{
+      padding: 24px 0;
+    }
+    .footer-email{
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: .02em;
+    }
+
+    @keyframes reveal{
+      from{ opacity: 0; transform: translateY(8px); }
+      to{ opacity: 1; transform: translateY(0); }
+    }
+    .hero,
+    .section{
+      animation: reveal .55s ease both;
+    }
+    .section:nth-of-type(2){ animation-delay: .04s; }
+    .section:nth-of-type(3){ animation-delay: .08s; }
+    .section:nth-of-type(4){ animation-delay: .12s; }
+    .section:nth-of-type(5){ animation-delay: .16s; }
+
+  </style>
+</head>
+<body>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="/" aria-label="Oasis Defender">
+        <img class="logo" src="assets/logos/color.png" alt="Oasis Defender" />
+      </a>
+      <nav class="menu" aria-label="Навигация">
+        <a class="active" href="/">Главная</a>
+        <a href="/product.html">Продукт</a>
+        <a href="/faq.html">FAQ</a>
+        <a href="/partners.html">Партнёрам</a>
+        <a href="#contacts">Контакты</a>
+        <a class="pill" href="/login">Войти</a>
+        <a class="cta" href="mailto:info@oasisdefender.ru?subject=Oasis%20Defender%20—%20демо">Написать</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="kicker">
+        <img class="kicker-logo" src="assets/logos/OD%20logo%20black.png" alt="Oasis Defender" />
+      </div>
+
+      <h1>Единая карта мультиоблачной инфраструктуры<br/>и рисков</h1>
+      <p class="sub">Объединяем инфраструктуру разных облаков и частных сред в одном окне. Вы видите реальную связность между системами и приоритетные риски</p>
+
+      <div class="cloud-strip" aria-label="Платформы и провайдеры">
+        <div class="cloud-row" style="margin-bottom:10px">
+          <span class="cloud-label">Платформы/среды</span>
+          <span class="chip"><span class="dot"></span>VMware</span>
+          <span class="chip"><span class="dot"></span>CloudStack</span>
+          <span class="chip"><span class="dot"></span>OpenStack</span>
+        </div>
+        <div class="cloud-row">
+          <span class="cloud-label">Провайдеры</span>
+          <span class="chip"><span class="dot"></span>Яндекс Cloud</span>
+          <span class="chip"><span class="dot"></span>AWS</span>
+          <span class="chip"><span class="dot"></span>Azure</span>
+          <span class="chip"><span class="dot"></span>Digital Ocean</span>
+          <span class="chip"><span class="dot"></span>Huawei Cloud</span>
+        </div>
+
+        <div class="hero-actions">
+          <a class="btn primary" href="mailto:info@oasisdefender.ru?subject=Oasis%20Defender%20—%20демо">Запросить демо</a>
+          <a class="btn" href="/product.html">Посмотреть продукт</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Ключевые возможности">
+      <div class="feature-box">
+        <div class="grid">
+        <div class="card feature">
+          <h3>Инвентарь и карта</h3>
+          <p>Собираем и объединяем данные из разных облаков и сред и формируем наглядную карту ресурсов и сервисов</p>
+        </div>
+        <div class="card feature">
+          <h3>Анализ сетевой доступности и связности</h3>
+          <p>Анализируем реальные пути доступа между системами и из внешней сети. Учитываются сетевые правила и фактическая связность</p>
+        </div>
+        <div class="card feature">
+          <h3>Приоритизация рисков</h3>
+          <p>Выделяем риски, которые могут быть реализованы на практике и имеют наибольшие последствия</p>
+        </div>
+        <div class="card feature">
+          <h3>Отчёты для ИБ, ИТ и руководства</h3>
+          <p>Отчёты и выгрузки для инженерных задач, аудита и управленческих решений</p>
+        </div>
+        <div class="card feature">
+          <h3>Контроль изменений инфраструктуры</h3>
+          <p>
+            Фиксируем изменения относительно предыдущего состояния инфраструктуры.
+            Уведомляем о новых публичных входах, изменённых правилах и появлении
+            новых путей доступа, которые повышают риск.
+          </p>
+        </div>
+        </div>
+        <div class="feature-note">Подключение выполняется без агентов и без вмешательства в инфраструктуру. Используются только read-only доступы</div>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Два сценария">
+      <div class="grid">
+        <div class="card panel">
+          <div class="panel-head">
+            <span class="badge enterprise">Enterprise</span>
+            <h2>Для корпоративной инфраструктуры и сложных сред</h2>
+          </div>
+          <p>В крупных инфраструктурах ключевая проблема — не отсутствие средств защиты, а целостное понимание связности и приоритетов.</p>
+          <ul class="bullets">
+            <li>Много сред, сегментов и правил, накопленных со временем</li>
+            <li>Разные команды и подрядчики с разной ответственностью</li>
+            <li>Неочевидно, какие риски действительно критичны и почему</li>
+          </ul>
+          <p style="margin-top:12px; font-weight:400; color: rgba(11,18,32,.84);">
+            <strong>Oasis Defender</strong> помогает получить единую картину инфраструктуры и связности между системами, аргументированно расставлять приоритеты по рискам, принимать решения на основе фактических данных.
+          </p>
+        </div>
+
+        <div class="card panel">
+          <div class="panel-head">
+            <span class="badge startup">StartUp</span>
+            <h2>Для быстрорастущих команд и продуктов</h2>
+          </div>
+          <p>При активном росте инфраструктура усложняется быстрее, чем процессы контроля.</p>
+          <ul class="bullets">
+            <li>Сервисы появляются быстрее, чем описываются и проверяются</li>
+            <li>Настройки меняются фрагментарно, без общей картины</li>
+            <li>Риски накапливаются незаметно — до аудита или инцидента</li>
+          </ul>
+          <p style="margin-top:12px; font-weight:400; color: rgba(11,18,32,.84);"><strong>Oasis Defender</strong> помогает увидеть общую картину и снизить риск инцидентов без расширения команды.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Кому полезно">
+      <div class="soft-surface">
+        <div class="center-title">Кому полезно</div>
+        <div class="plain-grid">
+          <div class="plain-item">
+            <h3>Командам стартапов и растущих продуктов</h3>
+            <p>Навести порядок в облачной инфраструктуре, выявить критичные риски и снизить вероятность инцидентов без расширения команды.</p>
+          </div>
+          <div class="plain-item">
+            <h3>DevOps и cloud-инженерам</h3>
+            <p>Быстро получить целостное представление о сетях, правилах доступа и зависимостях между сервисами.</p>
+          </div>
+          <div class="plain-item">
+            <h3>Специалистам по информационной безопасности</h3>
+            <p>Аргументированно расставить приоритеты и закрывать риски на основе реальных путей доступа.</p>
+          </div>
+          <div class="plain-item">
+            <h3>Руководителям ИТ и ИБ</h3>
+            <p>Понимать текущее состояние инфраструктуры, ключевые риски и прогресс их устранения.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="section" aria-label="Результат">
+      <div class="final-block">
+        <div class="final-head">
+          <h2>Что вы получаете в результате</h2>
+          <p>Мультиоблачная инфраструктура — в одной модели. Результат можно использовать как для инженерной работы, так и для контроля со стороны ИБ и руководства.</p>
+        </div>
+
+        <div class="final-list">
+          <div class="final-item">
+            <b>Единую карту инфраструктуры в разных облаках и средах</b>
+            <p>Все ресурсы и связи у разных провайдеров и в частных средах собраны в одном окне и в единой логике.</p>
+          </div>
+          <div class="final-item">
+            <b>Понимание реальной связности между системами</b>
+            <p>Видно, как сервисы и сегменты связаны между собой вне зависимости от того, где они размещены.</p>
+          </div>
+          <div class="final-item">
+            <b>Приоритетные риски с учётом мультиоблачной архитектуры</b>
+            <p>Риски оцениваются с учётом реальных путей доступа между облаками и средами.</p>
+          </div>
+          <div class="final-item">
+            <b>Материалы для работы и контроля</b>
+            <p>Отчёты и выгрузки, которые можно использовать для инженерных задач, аудита и управленческих решений.</p>
+          </div>
+        </div>
+
+        <div class="final-cta">
+          <a class="btn primary" href="mailto:info@oasisdefender.ru?subject=Oasis%20Defender%20—%20демо">Запросить демо</a>
+          <a class="btn" href="/product.html">Посмотреть продукт</a>
+        </div>
+      </div>
+
+      <div class="platforms-block" aria-label="Поддерживаемые платформы">
+        <h2>Поддерживаемые платформы</h2>
+        <p>Мультиоблачные и гибридные архитектуры в единой модели.</p>
+        <div class="platforms" aria-label="Список платформ">
+          <div class="platform">
+            <img src="assets/logos/vmware.svg" alt="VMware" loading="lazy" />
+          </div>
+          <div class="platform">
+            <img src="assets/logos/cloudstack.jpg" alt="Apache CloudStack" loading="lazy" />
+          </div>
+          <div class="platform">
+            <img src="assets/logos/openstack.svg" alt="OpenStack" loading="lazy" />
+          </div>
+          <div class="platform">
+            <img src="assets/logos/yandex-cloud.svg" alt="Yandex Cloud" loading="lazy" />
+          </div>
+          <div class="platform">
+            <img src="assets/logos/aws.svg" alt="AWS" loading="lazy" />
+          </div>
+          <div class="platform">
+            <img src="assets/logos/azure.svg" alt="Microsoft Azure" loading="lazy" />
+          </div>
+          <div class="platform">
+            <img src="assets/logos/digitalocean.svg" alt="DigitalOcean" loading="lazy" />
+          </div>
+          <div class="platform">
+            <img src="assets/logos/huawei.svg" alt="Huawei" loading="lazy" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer" id="contacts">
+    <div class="wrap footer-inner">
+      <div class="footer-meta">
+        <img class="footer-logo" src="assets/logos/OD%20logo%20black.png" alt="Oasis Defender" />
+        <a class="footer-email" href="mailto:info@oasisdefender.ru">info@oasisdefender.ru</a>
+      </div>
+      <div class="links footer-links" aria-label="Ссылки">
+        <a href="/">Главная</a>
+        <a href="/product.html">Продукт</a>
+        <a href="/faq.html">FAQ</a>
+        <a href="/partners.html">Партнёрам</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
